@@ -1,0 +1,129 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = "Building a CSV Diff Tool for API Regression Testing";
+const date = "2024-12-15";
+const description = "How I built a high-concurrency Python tool to catch data feed regressions before they hit production.";
+---
+
+<Layout title={title} description={description}>
+  <a href="/blog" class="back-link">← Back to Blog</a>
+  
+  <article>
+    <header>
+      <time datetime={date}>December 15, 2024</time>
+      <h1>{title}</h1>
+    </header>
+
+    <p>
+      When you're working with data feed systems, one of the scariest moments is 
+      deploying a configuration change and hoping nothing breaks. A field mapping 
+      that worked fine in staging might silently corrupt data in production. HTML 
+      content that rendered correctly might get stripped or double-encoded.
+    </p>
+
+    <p>
+      After one too many "wait, why is this field empty now?" incidents, I decided 
+      to build a tool that would catch these regressions before they hit production.
+    </p>
+
+    <h2>The Requirements</h2>
+
+    <p>I needed something that could:</p>
+
+    <ul>
+      <li>Fetch CSV exports from both production and development environments</li>
+      <li>Handle thousands of rows without running out of memory</li>
+      <li>Compare field-by-field and tell me exactly what changed</li>
+      <li>Run fast enough to be useful in a CI/CD pipeline</li>
+    </ul>
+
+    <h2>The Approach</h2>
+
+    <p>
+      Python's <code>asyncio</code> and <code>aiohttp</code> made the concurrency 
+      part straightforward. Instead of fetching one URL at a time, I could fire off 
+      200 requests simultaneously and wait for them all to complete.
+    </p>
+
+    <pre><code>async def fetch_all(urls: list[str], concurrency: int = 200):
+    semaphore = asyncio.Semaphore(concurrency)
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_with_semaphore(session, url, semaphore) for url in urls]
+        return await asyncio.gather(*tasks)</code></pre>
+
+    <p>
+      The tricky part was the diffing logic. CSV cells can contain HTML, which means 
+      whitespace normalization gets complicated. I ended up building a normalize 
+      function that handles the common edge cases:
+    </p>
+
+    <ul>
+      <li>Stripping leading/trailing whitespace</li>
+      <li>Normalizing line endings</li>
+      <li>Handling encoded HTML entities</li>
+      <li>Dealing with floating-point precision issues in numeric fields</li>
+    </ul>
+
+    <h2>The Result</h2>
+
+    <p>
+      The tool now runs as part of our pre-deployment checklist. When someone makes 
+      a change to a feed configuration, they can run the diff against both environments 
+      and see exactly what will change before it goes live.
+    </p>
+
+    <p>
+      It's caught several bugs that would have been painful to debug in production—fields 
+      that got renamed, HTML that got double-encoded, and one memorable case where a 
+      regex replacement was eating legitimate data.
+    </p>
+
+    <h2>Lessons Learned</h2>
+
+    <p>
+      The biggest takeaway: investing time in testing infrastructure pays off quickly. 
+      The tool took a weekend to build, but it's saved hours of debugging and prevented 
+      at least a few production incidents.
+    </p>
+
+    <p>
+      Sometimes the best code you write is the code that tells you when other code is broken.
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  article header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  article header time {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  article header h1 {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+  }
+
+  article h2 {
+    margin-top: 2.5rem;
+  }
+</style>

@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const projects = [
+  {
+    slug: 'watchruneterra',
+    title: 'WatchRuneterra',
+    description: 'League of Legends analytics platform with Bloomberg Terminal-inspired UI',
+    tags: ['Next.js', 'PostgreSQL', 'TimescaleDB', 'Redis'],
+    featured: true
+  },
+  {
+    slug: 'diaz-diff-checker',
+    title: 'Diaz Diff Checker',
+    description: 'CSV regression testing tool for API workflows',
+    tags: ['Python', 'Async', 'Testing']
+  },
+  {
+    slug: 'feedonomics-postman',
+    title: 'Feedonomics API Collection',
+    description: 'Reorganized Postman collection with security improvements',
+    tags: ['Postman', 'API', 'Shopify', 'BigCommerce']
+  }
+];
+---
+
+<Layout title="Portfolio" description="Selected projects and case studies">
+  <h1>Portfolio</h1>
+  
+  <p class="intro">
+    A selection of projects I've built or contributed to. Each one taught me 
+    something new about building reliable systems.
+  </p>
+
+  <div class="projects">
+    {projects.map(project => (
+      <a href={`/portfolio/${project.slug}`} class:list={['project-card', { featured: project.featured }]}>
+        <h2>{project.title}</h2>
+        <p>{project.description}</p>
+        <div class="tags">
+          {project.tags.map(tag => <span class="tag">{tag}</span>)}
+        </div>
+      </a>
+    ))}
+  </div>
+</Layout>
+
+<style>
+  h1 {
+    margin-bottom: 1rem;
+  }
+
+  .intro {
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .project-card {
+    display: block;
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+
+  .project-card:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+  }
+
+  .project-card.featured {
+    border-color: var(--accent-dim);
+  }
+
+  .project-card h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text);
+  }
+
+  .project-card p {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+  }
+</style>

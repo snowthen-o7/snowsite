@@ -1,0 +1,201 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Services" description="E-commerce integration, API development, and data feed optimization services">
+  <h1>Services</h1>
+  
+  <section class="intro">
+    <p>
+      I work with e-commerce companies to build reliable integrations, 
+      optimize data pipelines, and solve the technical problems that 
+      slow down operations.
+    </p>
+  </section>
+
+  <section class="service-card featured">
+    <div class="service-header">
+      <h2>Data Feed Audit</h2>
+      <span class="price">$500</span>
+    </div>
+    <p>
+      A comprehensive review of your Shopify-to-Feedonomics (or similar) 
+      data pipeline with actionable recommendations.
+    </p>
+    <h3>What's included:</h3>
+    <ul>
+      <li>Current feed health and error pattern analysis</li>
+      <li>Field mapping review and optimization opportunities</li>
+      <li>Performance bottleneck identification</li>
+      <li>Prioritized fix recommendations with estimated impact</li>
+      <li>30-minute walkthrough call</li>
+    </ul>
+    <p class="turnaround">Turnaround: 3-5 business days</p>
+    <a href="/contact" class="cta">Get Started →</a>
+  </section>
+
+  <h2>Other Ways I Can Help</h2>
+
+  <div class="services-grid">
+    <div class="service-item">
+      <h3>Integration Development</h3>
+      <p>
+        Custom integrations between your e-commerce platform and third-party 
+        services. Shopify, BigCommerce, WooCommerce, and more.
+      </p>
+    </div>
+
+    <div class="service-item">
+      <h3>API Development & Testing</h3>
+      <p>
+        Building robust APIs, creating comprehensive test suites, and 
+        debugging existing integrations that aren't working as expected.
+      </p>
+    </div>
+
+    <div class="service-item">
+      <h3>Data Pipeline Optimization</h3>
+      <p>
+        Improving the reliability and performance of your data flows—from 
+        product feeds to inventory sync to order management.
+      </p>
+    </div>
+
+    <div class="service-item">
+      <h3>Technical Consulting</h3>
+      <p>
+        Architecture reviews, vendor evaluations, and strategic guidance 
+        for your e-commerce tech stack decisions.
+      </p>
+    </div>
+  </div>
+
+  <section class="cta-section">
+    <p>Have a project in mind?</p>
+    <a href="/contact" class="cta">Let's talk →</a>
+  </section>
+</Layout>
+
+<style>
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+
+  .intro {
+    margin-bottom: 2.5rem;
+  }
+
+  .intro p {
+    font-size: 1.1rem;
+  }
+
+  .service-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .service-card.featured {
+    border-color: var(--accent);
+  }
+
+  .service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+  }
+
+  .service-header h2 {
+    margin: 0;
+  }
+
+  .price {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    color: var(--accent);
+  }
+
+  .service-card h3 {
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .service-card ul {
+    margin-bottom: 1.5rem;
+  }
+
+  .turnaround {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .cta {
+    display: inline-block;
+    font-family: var(--font-mono);
+    background: var(--accent);
+    color: var(--bg);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+  }
+
+  .cta:hover {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .service-item {
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .service-item h3 {
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .service-item p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
+  }
+
+  .cta-section {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-section p {
+    font-family: var(--font-mono);
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .service-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+</style>

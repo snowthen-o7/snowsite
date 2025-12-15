@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// In a real setup, you'd use Astro's content collections
+// For now, we'll hardcode a few example posts
+const posts = [
+  {
+    slug: 'building-csv-diff-tool',
+    title: 'Building a CSV Diff Tool for API Regression Testing',
+    date: '2024-12-15',
+    description: 'How I built a high-concurrency Python tool to catch data feed regressions before they hit production.',
+    tags: ['Python', 'Testing', 'API']
+  }
+];
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<Layout title="Blog" description="Technical writing, devlogs, and things I've learned">
+  <h1>Blog</h1>
+  
+  <p class="intro">
+    Technical deep-dives, project updates, and things I've learned along the way.
+  </p>
+
+  <div class="posts">
+    {posts.length === 0 ? (
+      <p class="empty">No posts yet. Check back soon!</p>
+    ) : (
+      posts.map(post => (
+        <a href={`/blog/${post.slug}`} class="post-card">
+          <time datetime={post.date}>{formatDate(post.date)}</time>
+          <h2>{post.title}</h2>
+          <p>{post.description}</p>
+          <div class="tags">
+            {post.tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+        </a>
+      ))
+    )}
+  </div>
+</Layout>
+
+<style>
+  h1 {
+    margin-bottom: 1rem;
+  }
+
+  .intro {
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .empty {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .post-card {
+    display: block;
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+
+  .post-card:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+  }
+
+  .post-card time {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .post-card h2 {
+    font-size: 1.25rem;
+    margin: 0.5rem 0;
+    color: var(--text);
+  }
+
+  .post-card p {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+  }
+</style>

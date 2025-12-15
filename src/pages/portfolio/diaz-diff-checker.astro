@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Diaz Diff Checker" description="CSV regression testing tool for API workflows">
+  <a href="/portfolio" class="back-link">← Back to Portfolio</a>
+  
+  <h1>Diaz Diff Checker</h1>
+  <p class="subtitle">CSV regression testing tool for API workflows</p>
+
+  <section>
+    <h2>The Problem</h2>
+    <p>
+      When working with data feed systems like Feedonomics, you often need to compare 
+      API responses between production and development environments. A change that 
+      looks harmless in code can silently break field mappings, strip HTML content, 
+      or introduce subtle data inconsistencies.
+    </p>
+    <p>
+      Manual comparison doesn't scale when you're dealing with thousands of products 
+      and dozens of fields per product.
+    </p>
+  </section>
+
+  <section>
+    <h2>The Solution</h2>
+    <p>
+      Diaz Diff Checker is a Python CLI tool that automates regression testing for 
+      CSV-based API responses. It fetches data from both environments concurrently, 
+      normalizes the output, and generates detailed diff reports showing exactly 
+      what changed.
+    </p>
+  </section>
+
+  <section>
+    <h2>Key Features</h2>
+    <ul>
+      <li><strong>High-concurrency fetching</strong> — Async Python with configurable parallelism (default: 200 concurrent requests)</li>
+      <li><strong>Smart diffing</strong> — Handles HTML content, whitespace normalization, and field-level comparison</li>
+      <li><strong>Memory optimized</strong> — Streams large CSVs without loading everything into memory</li>
+      <li><strong>Live progress display</strong> — Real-time progress bars and activity log</li>
+      <li><strong>Detailed reports</strong> — Shows additions, removals, and changes with before/after values</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Technical Details</h2>
+    <table>
+      <tr><td>Language</td><td>Python 3.11+</td></tr>
+      <tr><td>Async</td><td>aiohttp + asyncio</td></tr>
+      <tr><td>Output</td><td>CSV diff reports</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Sample Output</h2>
+    <pre><code>┌─ Diaz Diff Checker ─ Elapsed: 01:23 ────────────────────┐
+│ Fetches: [████████████░░░░░░░░░░░░░] 48/200 (24.0%)     │
+│ Diffs:   [██████░░░░░░░░░░░░░░░░░░░] 20/100 (20.0%)     │
+├─ Recent Activity ───────────────────────────────────────┤
+│ 14:32:15 [Test 47] Starting (prod first)...             │
+│ 14:32:16 [Test 45] PROD done (status=200)               │
+│ 14:32:17 [Test 44] +0 added, -0 removed, ~3 changed     │
+│ 14:32:17 [Test 43] No differences                       │
+└─────────────────────────────────────────────────────────┘</code></pre>
+  </section>
+
+  <section>
+    <h2>Why I Built It</h2>
+    <p>
+      I needed a reliable way to verify that changes to data feed configurations 
+      wouldn't break existing functionality. After manually comparing CSV exports 
+      one too many times, I built this tool to automate the process and catch 
+      regressions before they hit production.
+    </p>
+  </section>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  td {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td:first-child {
+    color: var(--text-muted);
+    width: 40%;
+  }
+
+  ul li strong {
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+</style>

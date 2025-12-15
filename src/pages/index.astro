@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Home">
+  <section class="hero">
+    <h1>Alex Diaz</h1>
+    <p class="subtitle">E-commerce & API Integration Specialist</p>
+  </section>
+
+  <section class="intro">
+    <p>
+      I help companies connect their systems, optimize data feeds, and build 
+      integrations that actually work. Specializing in Shopify, Feedonomics, 
+      and custom API development.
+    </p>
+    <p>
+      After years of debugging data pipelines and untangling complex integrations, 
+      I've developed a knack for finding where things break—and fixing them before 
+      they become problems.
+    </p>
+  </section>
+
+  <section class="links">
+    <a href="/portfolio" class="link-card">
+      <span class="link-label">Portfolio</span>
+      <span class="link-desc">Projects and case studies</span>
+    </a>
+    <a href="/blog" class="link-card">
+      <span class="link-label">Blog</span>
+      <span class="link-desc">Technical writing and devlogs</span>
+    </a>
+    <a href="/services" class="link-card">
+      <span class="link-label">Services</span>
+      <span class="link-desc">How I can help</span>
+    </a>
+    <a href="/contact" class="link-card">
+      <span class="link-label">Contact</span>
+      <span class="link-desc">Get in touch</span>
+    </a>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+
+  .intro {
+    margin-bottom: 3rem;
+  }
+
+  .intro p {
+    font-size: 1.1rem;
+  }
+
+  .links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .link-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+
+  .link-card:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+  }
+
+  .link-label {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .link-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 500px) {
+    .links {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

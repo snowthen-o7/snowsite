@@ -1,0 +1,131 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="WatchRuneterra" description="League of Legends analytics platform">
+  <a href="/portfolio" class="back-link">← Back to Portfolio</a>
+  
+  <h1>WatchRuneterra</h1>
+  <p class="subtitle">League of Legends analytics platform with Bloomberg Terminal-inspired UI</p>
+
+  <section>
+    <h2>Overview</h2>
+    <p>
+      WatchRuneterra is a professional-grade match analysis and player progression 
+      tracking platform for League of Legends. It provides the kind of detailed 
+      analytics typically reserved for pro teams—timeline events, phase-by-phase 
+      breakdowns, benchmark comparisons against your rank tier, and role model tracking.
+    </p>
+    <p>
+      The UI takes inspiration from Bloomberg terminals: dense with information, 
+      customizable dashboards, and designed for users who want depth over simplicity.
+    </p>
+  </section>
+
+  <section>
+    <h2>Core Features</h2>
+    <ul>
+      <li><strong>Match Analysis</strong> — Detailed breakdown with timeline events, gold/CS tracking, and phase-by-phase progression</li>
+      <li><strong>Champion Statistics</strong> — Per-champion performance metrics and progression insights</li>
+      <li><strong>Benchmark Comparisons</strong> — Compare performance against players in your rank tier</li>
+      <li><strong>Customizable Dashboards</strong> — Draggable widget system with saveable layout presets (15+ widget types)</li>
+      <li><strong>Live Game Monitoring</strong> — Track active games and LP changes</li>
+      <li><strong>Role Model Tracking</strong> — Compare your stats against high-elo players you follow</li>
+      <li><strong>Player Comparison</strong> — Side-by-side analysis with other summoners</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Technical Details</h2>
+    <table>
+      <tr><td>Framework</td><td>Next.js 16 (App Router)</td></tr>
+      <tr><td>Database</td><td>PostgreSQL (Neon) + TimescaleDB</td></tr>
+      <tr><td>Cache</td><td>Upstash Redis</td></tr>
+      <tr><td>Auth</td><td>Clerk + Riot OAuth</td></tr>
+      <tr><td>State</td><td>React Query (server) + Zustand (client)</td></tr>
+      <tr><td>Charts</td><td>AG Charts</td></tr>
+      <tr><td>Deploy</td><td>Vercel</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Scale</h2>
+    <ul>
+      <li>89 API endpoints (67 public, 12 admin, 6 cron jobs)</li>
+      <li>60+ services in the business logic layer</li>
+      <li>100+ React components across 13 categories</li>
+      <li>13 Prisma database models</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Architecture</h2>
+    <pre><code>Riot API → riot.service.ts → match-processing.service.ts
+                ↓
+         repositories/ → PostgreSQL + Redis
+                ↓
+         lib/services/ (analytics, benchmarks)
+                ↓
+         React Query hooks → Zustand stores → UI</code></pre>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <p>
+      Production MVP on version 0.1.0. Actively developed with comprehensive test 
+      coverage and structured workflows for quality assurance. Recent work includes 
+      Season 2026 preparation with version-gated features.
+    </p>
+  </section>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  td {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td:first-child {
+    color: var(--text-muted);
+    width: 40%;
+  }
+
+  ul li strong {
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+</style>
