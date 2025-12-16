@@ -1,4 +1,6 @@
 ---
+import SeasonalEffects from '../components/SeasonalEffects.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -23,6 +25,7 @@ const currentPath = Astro.url.pathname;
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   </head>
   <body>
+    <SeasonalEffects />
     <nav>
       <a href="/" class="logo">AD</a>
       <div class="nav-links">
@@ -50,8 +53,8 @@ const currentPath = Astro.url.pathname;
     --bg-hover: #1c1c1f;
     --text: #e8e8e8;
     --text-muted: #888;
-    --accent: #4ade80;
-    --accent-dim: #22c55e;
+    --accent: #f87171;
+    --accent-dim: #ef4444;
     --border: #2a2a2d;
     --font-mono: 'JetBrains Mono', monospace;
     --font-serif: 'Newsreader', Georgia, serif;
