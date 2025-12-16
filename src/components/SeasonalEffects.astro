@@ -94,6 +94,42 @@ const particles = Array.from({ length: count }).map(() => ({
         />
       </div>
     ))}
+
+    <!-- Ground pile -->
+    <div class="pile"></div>
+
+    <!-- Seasonal decoration (desktop only) - all rendered, CSS shows/hides based on data-season -->
+    <div class="decoration">
+      <div class="snowman">
+        <div class="snowman-head"></div>
+        <div class="snowman-body"></div>
+        <div class="snowman-base"></div>
+        <div class="snowman-arm left"></div>
+        <div class="snowman-arm right"></div>
+        <div class="snowman-hat"></div>
+      </div>
+      <div class="tree bare">
+        <div class="trunk"></div>
+        <div class="branches">
+          <div class="branch b1"></div>
+          <div class="branch b2"></div>
+          <div class="branch b3"></div>
+          <div class="branch b4"></div>
+          <div class="branch b5"></div>
+          <div class="branch b6"></div>
+        </div>
+      </div>
+      <div class="tree blossom">
+        <div class="trunk"></div>
+        <div class="canopy">
+          <div class="blossoms b1"></div>
+          <div class="blossoms b2"></div>
+          <div class="blossoms b3"></div>
+          <div class="blossoms b4"></div>
+          <div class="blossoms b5"></div>
+        </div>
+      </div>
+    </div>
   </div>
 )}
 
@@ -214,5 +250,471 @@ const particles = Array.from({ length: count }).map(() => ({
     .particle-wrapper:nth-child(n+25) {
       display: none;
     }
+  }
+
+  /* ========== GROUND PILE ========== */
+  .pile {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    pointer-events: none;
+  }
+
+  /* Snow pile - soft white mounds */
+  [data-season="winter"] .pile {
+    background:
+      /* Larger back mounds */
+      radial-gradient(ellipse 180px 45px at 5% 100%, rgba(230,235,240,0.95) 60%, transparent 60%),
+      radial-gradient(ellipse 200px 50px at 25% 100%, rgba(240,245,250,0.9) 60%, transparent 60%),
+      radial-gradient(ellipse 220px 55px at 50% 100%, rgba(235,240,245,0.95) 60%, transparent 60%),
+      radial-gradient(ellipse 190px 48px at 75% 100%, rgba(240,245,250,0.9) 60%, transparent 60%),
+      radial-gradient(ellipse 170px 42px at 95% 100%, rgba(230,235,240,0.95) 60%, transparent 60%),
+      /* Smaller front mounds for depth */
+      radial-gradient(ellipse 100px 30px at 15% 100%, rgba(255,255,255,0.95) 60%, transparent 60%),
+      radial-gradient(ellipse 120px 35px at 40% 100%, rgba(255,255,255,0.9) 60%, transparent 60%),
+      radial-gradient(ellipse 110px 32px at 65% 100%, rgba(255,255,255,0.95) 60%, transparent 60%),
+      radial-gradient(ellipse 90px 28px at 85% 100%, rgba(255,255,255,0.9) 60%, transparent 60%);
+  }
+
+  /* Leaf pile - warm autumn colors with more texture */
+  [data-season="fall"] .pile {
+    background:
+      /* Back layer - darker tones */
+      radial-gradient(ellipse 160px 40px at 8% 100%, rgba(124,45,18,0.9) 55%, transparent 55%),
+      radial-gradient(ellipse 180px 45px at 30% 100%, rgba(154,52,18,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 200px 50px at 55% 100%, rgba(139,69,19,0.9) 55%, transparent 55%),
+      radial-gradient(ellipse 170px 42px at 78% 100%, rgba(124,45,18,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 150px 38px at 95% 100%, rgba(154,52,18,0.9) 55%, transparent 55%),
+      /* Front layer - brighter highlights */
+      radial-gradient(ellipse 100px 28px at 12% 100%, rgba(194,65,12,0.9) 55%, transparent 55%),
+      radial-gradient(ellipse 90px 25px at 35% 100%, rgba(185,28,28,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 110px 30px at 50% 100%, rgba(161,98,7,0.9) 55%, transparent 55%),
+      radial-gradient(ellipse 95px 26px at 70% 100%, rgba(194,65,12,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 85px 24px at 88% 100%, rgba(185,28,28,0.9) 55%, transparent 55%);
+  }
+
+  /* Petal pile - soft pink layers */
+  [data-season="spring"] .pile {
+    background:
+      /* Back layer - slightly darker pink */
+      radial-gradient(ellipse 170px 42px at 6% 100%, rgba(244,163,196,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 190px 48px at 28% 100%, rgba(249,168,212,0.8) 55%, transparent 55%),
+      radial-gradient(ellipse 210px 52px at 52% 100%, rgba(244,163,196,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 180px 45px at 76% 100%, rgba(249,168,212,0.8) 55%, transparent 55%),
+      radial-gradient(ellipse 160px 40px at 94% 100%, rgba(244,163,196,0.85) 55%, transparent 55%),
+      /* Front layer - lighter highlights */
+      radial-gradient(ellipse 100px 28px at 18% 100%, rgba(252,231,243,0.9) 55%, transparent 55%),
+      radial-gradient(ellipse 110px 30px at 38% 100%, rgba(251,207,232,0.85) 55%, transparent 55%),
+      radial-gradient(ellipse 120px 32px at 60% 100%, rgba(252,231,243,0.9) 55%, transparent 55%),
+      radial-gradient(ellipse 95px 26px at 82% 100%, rgba(251,207,232,0.85) 55%, transparent 55%);
+  }
+
+  /* ========== DECORATIONS (Desktop only) ========== */
+  .decoration {
+    position: absolute;
+    bottom: 25px;
+    right: 40px;
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .decoration {
+      display: block;
+    }
+  }
+
+  /* Hide all decorations by default, show only the matching season */
+  .snowman,
+  .tree.bare,
+  .tree.blossom {
+    display: none;
+  }
+
+  [data-season="winter"] .snowman {
+    display: block;
+  }
+
+  /* Trees disabled for now - uncomment to enable */
+  /*
+  [data-season="fall"] .tree.bare {
+    display: block;
+  }
+
+  [data-season="spring"] .tree.blossom {
+    display: block;
+  }
+  */
+
+  /* ========== SNOWMAN ========== */
+  .snowman {
+    position: relative;
+    width: 80px;
+    height: 140px;
+  }
+
+  .snowman-base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+    border-radius: 50%;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1);
+  }
+
+  .snowman-body {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+    border-radius: 50%;
+    box-shadow: inset -4px -4px 10px rgba(0,0,0,0.1);
+  }
+
+  /* Buttons on body */
+  .snowman-body::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: #333;
+    border-radius: 50%;
+    box-shadow: 0 12px 0 #333;
+  }
+
+  .snowman-head {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+    border-radius: 50%;
+    box-shadow: inset -3px -3px 8px rgba(0,0,0,0.1);
+  }
+
+  /* Eyes */
+  .snowman-head::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    width: 5px;
+    height: 5px;
+    background: #333;
+    border-radius: 50%;
+    box-shadow: 14px 0 0 #333;
+  }
+
+  /* Carrot nose - points outward to the left */
+  .snowman-head::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 5px;
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-right: 18px solid #e67300;
+    filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.2));
+  }
+
+  .snowman-hat {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 20px;
+    background: #222;
+    border-radius: 2px;
+  }
+
+  .snowman-hat::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 6px;
+    background: #222;
+    border-radius: 2px;
+  }
+
+  .snowman-arm {
+    position: absolute;
+    bottom: 65px;
+    width: 35px;
+    height: 4px;
+    background: #5c4033;
+    border-radius: 2px;
+  }
+
+  .snowman-arm.left {
+    left: -15px;
+    transform: rotate(-20deg);
+  }
+
+  .snowman-arm.right {
+    right: -15px;
+    transform: rotate(20deg);
+  }
+
+  /* ========== BARE TREE (Fall) ========== */
+  .tree.bare {
+    position: relative;
+    width: 180px;
+    height: 220px;
+  }
+
+  .tree.bare .trunk {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 90px;
+    background: linear-gradient(90deg, #2a1a0a, #4a3020, #5c4033, #4a3020, #2a1a0a);
+    border-radius: 3px 3px 8px 8px;
+  }
+
+  .tree.bare .branches {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+  }
+
+  .tree.bare .branch {
+    position: absolute;
+    background: linear-gradient(to top, #4a3020, #5c4033);
+    border-radius: 3px;
+    transform-origin: bottom center;
+  }
+
+  /* All branches originate from center (the trunk top) */
+  .tree.bare .b1 {
+    bottom: 0;
+    left: 0;
+    width: 7px;
+    height: 95px;
+    transform: rotate(-8deg);
+  }
+
+  .tree.bare .b1::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 5px;
+    width: 4px;
+    height: 35px;
+    background: #5c4033;
+    border-radius: 2px;
+    transform: rotate(30deg);
+    transform-origin: bottom left;
+  }
+
+  .tree.bare .b2 {
+    bottom: 0;
+    left: 0;
+    width: 7px;
+    height: 90px;
+    transform: rotate(10deg);
+  }
+
+  .tree.bare .b2::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    right: 5px;
+    width: 4px;
+    height: 30px;
+    background: #5c4033;
+    border-radius: 2px;
+    transform: rotate(-35deg);
+    transform-origin: bottom right;
+  }
+
+  .tree.bare .b3 {
+    bottom: 0;
+    left: 0;
+    width: 6px;
+    height: 70px;
+    transform: rotate(-30deg);
+  }
+
+  .tree.bare .b3::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 4px;
+    width: 3px;
+    height: 25px;
+    background: #5c4033;
+    border-radius: 2px;
+    transform: rotate(25deg);
+    transform-origin: bottom left;
+  }
+
+  .tree.bare .b4 {
+    bottom: 0;
+    left: 0;
+    width: 6px;
+    height: 65px;
+    transform: rotate(32deg);
+  }
+
+  .tree.bare .b4::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    right: 4px;
+    width: 3px;
+    height: 22px;
+    background: #5c4033;
+    border-radius: 2px;
+    transform: rotate(-30deg);
+    transform-origin: bottom right;
+  }
+
+  .tree.bare .b5 {
+    bottom: 0;
+    left: 0;
+    width: 5px;
+    height: 50px;
+    transform: rotate(-50deg);
+  }
+
+  .tree.bare .b6 {
+    bottom: 0;
+    left: 0;
+    width: 5px;
+    height: 45px;
+    transform: rotate(55deg);
+  }
+
+  /* ========== BLOSSOM TREE (Spring) ========== */
+  .tree.blossom {
+    position: relative;
+    width: 200px;
+    height: 220px;
+  }
+
+  .tree.blossom .trunk {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 85px;
+    background: linear-gradient(90deg, #2a1a0a, #4a3020, #5c4033, #4a3020, #2a1a0a);
+    border-radius: 3px 3px 8px 8px;
+  }
+
+  /* Visible branch structure extending from trunk */
+  .tree.blossom .trunk::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -6px;
+    width: 8px;
+    height: 45px;
+    background: linear-gradient(90deg, #3d2817, #4a3020);
+    border-radius: 4px;
+    transform: rotate(-25deg);
+    transform-origin: bottom center;
+  }
+
+  .tree.blossom .trunk::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    width: 8px;
+    height: 45px;
+    background: linear-gradient(90deg, #4a3020, #3d2817);
+    border-radius: 4px;
+    transform: rotate(25deg);
+    transform-origin: bottom center;
+  }
+
+  .tree.blossom .canopy {
+    position: absolute;
+    bottom: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 150px;
+  }
+
+  .tree.blossom .blossoms {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+      rgba(255,255,255,0.95),
+      rgba(252,231,243,0.9) 25%,
+      rgba(251,207,232,0.85) 45%,
+      rgba(249,168,212,0.8) 65%,
+      rgba(244,114,182,0.7) 85%);
+    box-shadow:
+      inset -4px -4px 12px rgba(244,114,182,0.3),
+      inset 3px 3px 8px rgba(255,255,255,0.5);
+  }
+
+  /* Center cluster - connects to trunk */
+  .tree.blossom .blossoms.b1 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 70px;
+  }
+
+  /* Top cluster */
+  .tree.blossom .blossoms.b2 {
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55px;
+    height: 50px;
+  }
+
+  /* Left cluster - spread out */
+  .tree.blossom .blossoms.b3 {
+    bottom: 25px;
+    left: 0;
+    width: 60px;
+    height: 55px;
+  }
+
+  /* Right cluster - spread out */
+  .tree.blossom .blossoms.b4 {
+    bottom: 20px;
+    right: 0;
+    width: 65px;
+    height: 60px;
+  }
+
+  /* Upper left accent */
+  .tree.blossom .blossoms.b5 {
+    bottom: 65px;
+    left: 20px;
+    width: 50px;
+    height: 45px;
   }
 </style>
