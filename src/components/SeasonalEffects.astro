@@ -11,29 +11,62 @@ function getSeason(month: number): Season {
   return 'fall';                                    // Sep, Oct, Nov
 }
 
-// Allow URL parameter override for testing: ?season=fall, ?season=spring, etc.
-const urlSeason = Astro.url.searchParams.get('season') as Season | null;
-const validSeasons: Season[] = ['winter', 'spring', 'summer', 'fall'];
-const season = (urlSeason && validSeasons.includes(urlSeason)) ? urlSeason : getSeason(month);
+// In static mode, we use the date-based season. Client-side JS handles ?season= override for testing.
+const season = getSeason(month);
 
 // Configuration per season
 const config = {
-  winter: { count: 50, enabled: true },
-  spring: { count: 30, enabled: true },
-  summer: { count: 0, enabled: false },
-  fall: { count: 40, enabled: true },
+  winter: {
+    count: 50,
+    enabled: true,
+    size: () => 4 + Math.random() * 6,
+    duration: () => 8 + Math.random() * 7,
+    delay: () => Math.random() * -15,
+    sway: () => 20 + Math.random() * 40,
+    opacity: () => 0.4 + Math.random() * 0.5,
+  },
+  spring: {
+    count: 35,
+    enabled: true,
+    size: () => 6 + Math.random() * 8,
+    duration: () => 10 + Math.random() * 8,
+    delay: () => Math.random() * -18,
+    sway: () => 30 + Math.random() * 50,
+    opacity: () => 0.5 + Math.random() * 0.4,
+  },
+  summer: {
+    count: 0,
+    enabled: false,
+    size: () => 0,
+    duration: () => 0,
+    delay: () => 0,
+    sway: () => 0,
+    opacity: () => 0,
+  },
+  fall: {
+    count: 40,
+    enabled: true,
+    size: () => 8 + Math.random() * 10,
+    duration: () => 12 + Math.random() * 8,
+    delay: () => Math.random() * -20,
+    sway: () => 40 + Math.random() * 60,
+    opacity: () => 0.6 + Math.random() * 0.3,
+  },
 };
 
-const { count, enabled } = config[season];
+const seasonConfig = config[season];
+const { count, enabled } = seasonConfig;
 
-// Pre-generate random values for each particle
+// Pre-generate random values for each particle with season-specific properties
 const particles = Array.from({ length: count }).map(() => ({
   left: Math.random() * 100,
-  size: 4 + Math.random() * 6,
-  duration: 8 + Math.random() * 7,
-  delay: Math.random() * -15,
-  drift: -30 + Math.random() * 60,
-  opacity: 0.4 + Math.random() * 0.5,
+  size: seasonConfig.size(),
+  duration: seasonConfig.duration(),
+  delay: seasonConfig.delay(),
+  sway: seasonConfig.sway(),
+  swayDuration: 2 + Math.random() * 3, // 2-5 seconds for horizontal sway
+  spinDirection: Math.random() > 0.5 ? 1 : -1, // clockwise or counter-clockwise
+  opacity: seasonConfig.opacity(),
 }));
 ---
 
@@ -41,22 +74,45 @@ const particles = Array.from({ length: count }).map(() => ({
   <div class="seasonal-effects" data-season={season} aria-hidden="true">
     {particles.map((p, i) => (
       <div
-        class="particle"
+        class="particle-wrapper"
         style={`
           left: ${p.left}%;
-          width: ${p.size}px;
-          height: ${p.size}px;
-          animation-duration: ${p.duration}s;
-          animation-delay: ${p.delay}s;
-          --drift: ${p.drift}px;
-          --opacity: ${p.opacity};
+          --fall-duration: ${p.duration}s;
+          --delay: ${p.delay}s;
         `}
-      />
+      >
+        <div
+          class="particle"
+          style={`
+            width: ${p.size}px;
+            height: ${p.size}px;
+            --sway-duration: ${p.swayDuration}s;
+            --sway: ${p.sway}px;
+            --spin-direction: ${p.spinDirection};
+            --opacity: ${p.opacity};
+          `}
+        />
+      </div>
     ))}
   </div>
 )}
 
-<style>
+<script>
+  // Client-side season override for testing via ?season= parameter
+  const params = new URLSearchParams(window.location.search);
+  const seasonParam = params.get('season');
+  const validSeasons = ['winter', 'spring', 'summer', 'fall'];
+
+  if (seasonParam && validSeasons.includes(seasonParam)) {
+    const el = document.querySelector('.seasonal-effects');
+    if (el) {
+      el.setAttribute('data-season', seasonParam);
+      console.log('Season overridden to:', seasonParam);
+    }
+  }
+</script>
+
+<style is:global>
   .seasonal-effects {
     position: fixed;
     top: 0;
@@ -75,9 +131,17 @@ const particles = Array.from({ length: count }).map(() => ({
     }
   }
 
-  .particle {
+  /* Wrapper handles vertical falling only */
+  .particle-wrapper {
     position: absolute;
     top: -20px;
+    animation: fall var(--fall-duration) linear infinite;
+    animation-delay: var(--delay);
+  }
+
+  /* Inner particle handles appearance, sway, and spin */
+  .particle {
+    opacity: var(--opacity, 0.6);
   }
 
   /* Winter - Snowflakes */
@@ -85,126 +149,69 @@ const particles = Array.from({ length: count }).map(() => ({
     background: white;
     border-radius: 50%;
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
-    animation-name: fall-snow;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-
-  @keyframes fall-snow {
-    0% {
-      transform: translateY(0) translateX(0);
-      opacity: 0;
-    }
-    5% {
-      opacity: var(--opacity, 0.6);
-    }
-    50% {
-      transform: translateY(50vh) translateX(calc(var(--drift, 0px) * 0.5));
-    }
-    95% {
-      opacity: var(--opacity, 0.6);
-    }
-    100% {
-      transform: translateY(100vh) translateX(var(--drift, 0px));
-      opacity: 0;
-    }
+    animation: sway var(--sway-duration) ease-in-out infinite;
   }
 
   /* Fall - Leaves */
   [data-season="fall"] .particle {
     border-radius: 0 70% 0 70%;
-    animation-name: fall-leaf;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
+    animation:
+      sway var(--sway-duration) ease-in-out infinite,
+      spin calc(var(--sway-duration) * 2) linear infinite;
   }
 
-  /* Varied fall colors */
-  [data-season="fall"] .particle:nth-child(5n) {
-    background: #c2410c;
-  }
-  [data-season="fall"] .particle:nth-child(5n+1) {
-    background: #b91c1c;
-  }
-  [data-season="fall"] .particle:nth-child(5n+2) {
-    background: #a16207;
-  }
-  [data-season="fall"] .particle:nth-child(5n+3) {
-    background: #9a3412;
-  }
-  [data-season="fall"] .particle:nth-child(5n+4) {
-    background: #7c2d12;
-  }
-
-  @keyframes fall-leaf {
-    0% {
-      transform: translateY(0) translateX(0) rotate(0deg);
-      opacity: 0;
-    }
-    5% {
-      opacity: var(--opacity, 0.7);
-    }
-    25% {
-      transform: translateY(25vh) translateX(calc(var(--drift, 0px) * 0.3)) rotate(90deg);
-    }
-    50% {
-      transform: translateY(50vh) translateX(calc(var(--drift, 0px) * -0.2)) rotate(180deg);
-    }
-    75% {
-      transform: translateY(75vh) translateX(calc(var(--drift, 0px) * 0.8)) rotate(270deg);
-    }
-    95% {
-      opacity: var(--opacity, 0.7);
-    }
-    100% {
-      transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(360deg);
-      opacity: 0;
-    }
-  }
+  /* Varied fall colors - using wrapper nth-child since particle is nested */
+  [data-season="fall"] .particle-wrapper:nth-child(5n) .particle { background: #c2410c; }
+  [data-season="fall"] .particle-wrapper:nth-child(5n+1) .particle { background: #b91c1c; }
+  [data-season="fall"] .particle-wrapper:nth-child(5n+2) .particle { background: #a16207; }
+  [data-season="fall"] .particle-wrapper:nth-child(5n+3) .particle { background: #9a3412; }
+  [data-season="fall"] .particle-wrapper:nth-child(5n+4) .particle { background: #7c2d12; }
 
   /* Spring - Cherry blossom petals */
   [data-season="spring"] .particle {
     border-radius: 70% 0 70% 0;
-    animation-name: fall-petal;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
+    animation:
+      sway var(--sway-duration) ease-in-out infinite,
+      spin calc(var(--sway-duration) * 3) ease-in-out infinite;
   }
 
-  [data-season="spring"] .particle:nth-child(3n) {
-    background: #fce7f3;
-  }
-  [data-season="spring"] .particle:nth-child(3n+1) {
-    background: #fbcfe8;
-  }
-  [data-season="spring"] .particle:nth-child(3n+2) {
-    background: #f9a8d4;
-  }
+  [data-season="spring"] .particle-wrapper:nth-child(3n) .particle { background: #fce7f3; }
+  [data-season="spring"] .particle-wrapper:nth-child(3n+1) .particle { background: #fbcfe8; }
+  [data-season="spring"] .particle-wrapper:nth-child(3n+2) .particle { background: #f9a8d4; }
 
-  @keyframes fall-petal {
+  /* Falling animation - vertical movement on wrapper */
+  @keyframes fall {
     0% {
-      transform: translateY(0) translateX(0) rotate(0deg) scale(1);
-      opacity: 0;
-    }
-    5% {
-      opacity: var(--opacity, 0.6);
-    }
-    33% {
-      transform: translateY(33vh) translateX(calc(var(--drift, 0px) * 0.5)) rotate(120deg) scale(0.95);
-    }
-    66% {
-      transform: translateY(66vh) translateX(calc(var(--drift, 0px) * -0.3)) rotate(240deg) scale(0.9);
-    }
-    95% {
-      opacity: var(--opacity, 0.6);
+      transform: translateY(0);
     }
     100% {
-      transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(360deg) scale(0.85);
-      opacity: 0;
+      transform: translateY(calc(100vh + 40px));
+    }
+  }
+
+  /* Swaying animation - horizontal oscillation */
+  @keyframes sway {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(var(--sway, 30px));
+    }
+  }
+
+  /* Rotation animation - uses spin-direction for clockwise/counter-clockwise */
+  @keyframes spin {
+    0% {
+      rotate: 0deg;
+    }
+    100% {
+      rotate: calc(360deg * var(--spin-direction, 1));
     }
   }
 
   /* Reduce particle count on mobile for performance */
   @media (max-width: 600px) {
-    .particle:nth-child(n+25) {
+    .particle-wrapper:nth-child(n+25) {
       display: none;
     }
   }
