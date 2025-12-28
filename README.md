@@ -1,4 +1,4 @@
-# alexdiaz.dev
+# alexdiaz.me
 
 Personal website and blog built with [Astro](https://astro.build).
 
@@ -22,19 +22,21 @@ npm run preview
 
 ```
 src/
+├── components/
+│   └── SeasonalEffects.astro  # Seasonal visual effects (snow, leaves, etc.)
 ├── layouts/
-│   └── Layout.astro       # Base layout with nav/footer
+│   └── Layout.astro           # Base layout with nav/footer
 ├── pages/
-│   ├── index.astro        # Homepage
-│   ├── services.astro     # Services & pricing
-│   ├── contact.astro      # Contact info
+│   ├── index.astro            # Homepage
+│   ├── services.astro         # Services & pricing
+│   ├── contact.astro          # Contact info
+│   ├── rss.xml.ts             # RSS feed
 │   ├── portfolio/
-│   │   ├── index.astro    # Portfolio listing
-│   │   └── [project].astro # Individual project pages
+│   │   ├── index.astro        # Portfolio listing
+│   │   └── *.astro            # Individual project pages
 │   └── blog/
-│       ├── index.astro    # Blog listing
-│       └── [post].astro   # Individual blog posts
-└── content/               # (Future) Markdown content
+│       ├── index.astro        # Blog listing
+│       └── *.astro            # Individual blog posts
 ```
 
 ## Adding a Blog Post
