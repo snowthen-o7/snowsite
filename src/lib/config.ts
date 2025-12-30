@@ -1,7 +1,7 @@
 /**
  * Configuration and constants for CSV Toolkit.
  * 
- * TypeScript port of diaz_diff_checker's config.py.
+ * TypeScript port of data_diff_checker's config.py.
  * All configurable values are centralized here for easy customization.
  */
 

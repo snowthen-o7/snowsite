@@ -1,7 +1,7 @@
 /**
  * Memory-efficient diff calculator using hash-based comparison.
  * 
- * TypeScript port of diaz_diff_checker's EfficientDiffer.
+ * TypeScript port of data_diff_checker's EfficientDiffer.
  * 
  * This module provides efficient CSV comparison that:
  * - Uses hashes for fast row comparison (stores hashes, not full rows)

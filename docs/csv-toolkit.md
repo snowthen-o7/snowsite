@@ -45,7 +45,7 @@ Compare two CSV files to find added, removed, and modified rows.
 
 ### Algorithm: EfficientDiffer
 
-A memory-efficient, hash-based comparison algorithm (TypeScript port of `diaz_diff_checker` Python package).
+A memory-efficient, hash-based comparison algorithm (TypeScript port of `data_diff_checker` Python package).
 
 #### Three-Phase Algorithm
 
@@ -339,4 +339,4 @@ export const DEFAULT_MAX_EXAMPLES = 10;
 
 ## Related Projects
 
-The diff algorithm is a TypeScript port of [Diaz Diff Checker](https://github.com/snowthen-o7/data-diff-checker), a Python CLI tool for comparing large CSV/JSON files.
+The diff algorithm is a TypeScript port of [Data Diff Checker](https://github.com/snowthen-o7/data-diff-checker), a Python CLI tool for comparing large CSV/JSON files.
