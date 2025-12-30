@@ -1,0 +1,551 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CsvToolkit from '../../components/CsvToolkit/index';
+---
+
+<Layout title="CSV Toolkit" description="Free browser-based CSV tools: compare, merge, deduplicate, and transform CSV files. All processing happens locally - your data never leaves your browser." wide disableParticles>
+  <div class="toolkit-page">
+    <!-- Hero -->
+    <header class="hero">
+      <h1>CSV Toolkit</h1>
+      <p class="subtitle">
+        Compare, merge, deduplicate, and transform CSV files — all in your browser.
+      </p>
+      <div class="privacy-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>100% client-side — your files never leave your device</span>
+      </div>
+    </header>
+
+    <!-- Tool Component -->
+    <div class="toolkit-wrapper">
+      <CsvToolkit client:load />
+    </div>
+
+    <!-- Features -->
+    <section class="features">
+      <h2>What You Can Do</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <span class="feature-icon">⇄</span>
+          <h3>Compare (Diff)</h3>
+          <p>Find differences between two CSV files. Identify added, removed, and modified rows with line numbers.</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">⊕</span>
+          <h3>Merge</h3>
+          <p>Combine two CSVs by a key column. Supports left, right, inner, and outer joins.</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">≡</span>
+          <h3>Deduplicate</h3>
+          <p>Remove duplicate rows based on selected columns. Keep first or last occurrence.</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">⚙</span>
+          <h3>Transform</h3>
+          <p>Filter rows, select columns, rename headers, and sort data.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Details -->
+    <section class="tech-section">
+      <h2>Built for Data Professionals</h2>
+      <ul class="tech-list">
+        <li>Composite primary keys — Compare by multiple columns (e.g., <code>sku, locale</code>)</li>
+        <li>Smart change detection — Separates meaningful changes from inventory/availability noise</li>
+        <li>Line number tracking — Jump directly to changed rows in your files</li>
+        <li>No file size limits — Processing happens in your browser's memory</li>
+        <li>Export to JSON — Get structured diff reports matching the CLI output</li>
+      </ul>
+      <p class="cli-link">
+        Need CLI access? Check out the <a href="https://github.com/snowthen-o7/data-diff-checker" target="_blank" rel="noopener">Diaz Diff Checker</a> Python package.
+      </p>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .toolkit-page {
+    max-width: 100%;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    background: linear-gradient(135deg, #dc2626, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #4ade80;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .toolkit-wrapper {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .features {
+    margin-bottom: 3rem;
+  }
+
+  .features h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .feature {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: border-color 0.15s ease;
+  }
+
+  .feature:hover {
+    border-color: var(--accent);
+  }
+
+  .feature-icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+  }
+
+  .feature p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .tech-section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+  }
+
+  .tech-section h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .tech-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .tech-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .tech-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #4ade80;
+  }
+
+  .cli-link {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 600px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .toolkit-wrapper {
+      padding: 1rem;
+      border-radius: 8px;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Override React component styles to match site theme */
+  
+  .toolkit-wrapper {
+    /* Tab buttons */
+    button[role="tab"],
+    .flex.border-b button {
+      font-family: var(--font-mono) !important;
+      font-size: 0.85rem !important;
+      color: var(--text-muted) !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 0.75rem 1rem !important;
+      cursor: pointer;
+      border-bottom: 2px solid transparent !important;
+      transition: all 0.15s ease;
+    }
+
+    button[role="tab"]:hover,
+    .flex.border-b button:hover {
+      color: var(--text) !important;
+    }
+
+    button[role="tab"][aria-selected="true"],
+    button[role="tab"].active,
+    .flex.border-b button.border-blue-500,
+    .flex.border-b button.text-blue-600 {
+      color: var(--accent) !important;
+      border-bottom-color: var(--accent) !important;
+    }
+
+    /* Dropzone */
+    .border-dashed {
+      border-color: var(--border) !important;
+      background: var(--bg) !important;
+      border-radius: 8px !important;
+    }
+
+    .border-dashed:hover {
+      border-color: var(--accent) !important;
+    }
+
+    /* Primary buttons */
+    button.bg-blue-600,
+    button.bg-blue-500,
+    .bg-blue-600,
+    .bg-blue-500 {
+      background: var(--accent) !important;
+      color: var(--bg) !important;
+      font-family: var(--font-mono) !important;
+      font-size: 0.85rem !important;
+      border-radius: 6px !important;
+      border: none !important;
+    }
+
+    button.bg-blue-600:hover,
+    button.bg-blue-500:hover {
+      background: var(--text) !important;
+    }
+
+    /* Secondary buttons */
+    button.border-zinc-300,
+    button.border-zinc-700,
+    .border-zinc-300,
+    .border-zinc-700 {
+      border-color: var(--border) !important;
+      color: var(--text-muted) !important;
+      background: transparent !important;
+      font-family: var(--font-mono) !important;
+    }
+
+    button.border-zinc-300:hover,
+    button.border-zinc-700:hover {
+      border-color: var(--text-muted) !important;
+      color: var(--text) !important;
+      background: var(--bg-hover) !important;
+    }
+
+    /* Inputs and selects */
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      background: var(--bg) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      font-family: var(--font-mono) !important;
+      font-size: 0.85rem !important;
+      border-radius: 6px !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent) !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    input::placeholder {
+      color: var(--text-muted) !important;
+    }
+
+    /* Labels */
+    label {
+      color: var(--text-muted) !important;
+      font-size: 0.8rem !important;
+    }
+
+    /* Cards and panels */
+    .rounded-lg,
+    .rounded-xl,
+    .rounded-md {
+      border-radius: 8px !important;
+    }
+
+    .border,
+    .border-zinc-200,
+    .border-zinc-800 {
+      border-color: var(--border) !important;
+    }
+
+    .bg-white,
+    .bg-zinc-50,
+    .bg-zinc-100,
+    .bg-zinc-900 {
+      background: var(--bg) !important;
+    }
+
+    /* Text colors */
+    .text-zinc-400,
+    .text-zinc-500,
+    .text-zinc-600 {
+      color: var(--text-muted) !important;
+    }
+
+    .text-zinc-700,
+    .text-zinc-800,
+    .text-zinc-900,
+    .text-zinc-100,
+    .text-zinc-200 {
+      color: var(--text) !important;
+    }
+
+    /* Stats colors */
+    .text-green-600,
+    .text-green-500 {
+      color: #4ade80 !important;
+    }
+
+    .text-red-600,
+    .text-red-500 {
+      color: #f87171 !important;
+    }
+
+    .text-amber-600,
+    .text-amber-500 {
+      color: #fbbf24 !important;
+    }
+
+    .text-blue-600,
+    .text-blue-500 {
+      color: var(--accent) !important;
+    }
+
+    /* Background tints */
+    .bg-green-50,
+    .bg-green-100 {
+      background: rgba(74, 222, 128, 0.1) !important;
+    }
+
+    .bg-red-50,
+    .bg-red-100 {
+      background: rgba(248, 113, 113, 0.1) !important;
+    }
+
+    .bg-amber-50,
+    .bg-amber-100 {
+      background: rgba(251, 191, 36, 0.1) !important;
+    }
+
+    .bg-blue-50,
+    .bg-blue-100 {
+      background: rgba(248, 113, 113, 0.1) !important;
+    }
+
+    /* Badge text */
+    .text-green-700,
+    .text-green-800 {
+      color: #4ade80 !important;
+    }
+
+    .text-red-700,
+    .text-red-800 {
+      color: #f87171 !important;
+    }
+
+    .text-amber-700,
+    .text-amber-800 {
+      color: #fbbf24 !important;
+    }
+
+    /* Borders for colored sections */
+    .border-green-500,
+    .border-green-300 {
+      border-color: rgba(74, 222, 128, 0.5) !important;
+    }
+
+    .border-red-500,
+    .border-red-300 {
+      border-color: rgba(248, 113, 113, 0.5) !important;
+    }
+
+    .border-amber-500,
+    .border-amber-300 {
+      border-color: rgba(251, 191, 36, 0.5) !important;
+    }
+
+    .border-blue-500,
+    .border-blue-300 {
+      border-color: rgba(248, 113, 113, 0.5) !important;
+    }
+
+    /* Checkboxes */
+    input[type="checkbox"] {
+      accent-color: var(--accent) !important;
+      width: 16px !important;
+      height: 16px !important;
+    }
+
+    /* Code */
+    code {
+      background: var(--bg) !important;
+      color: var(--accent) !important;
+      font-family: var(--font-mono) !important;
+      padding: 0.1em 0.3em !important;
+      border-radius: 4px !important;
+      font-size: 0.85em !important;
+    }
+
+    pre {
+      background: var(--bg) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+    }
+
+    pre code {
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    /* Tables */
+    table {
+      font-size: 0.85rem !important;
+    }
+
+    th {
+      color: var(--text-muted) !important;
+      font-family: var(--font-mono) !important;
+      font-weight: 500 !important;
+      border-color: var(--border) !important;
+    }
+
+    td {
+      color: var(--text) !important;
+      border-color: var(--border) !important;
+    }
+
+    tbody tr:hover {
+      background: var(--bg-hover) !important;
+    }
+
+    /* Progress bars */
+    .bg-blue-500,
+    .bg-blue-600 {
+      background: var(--accent) !important;
+    }
+
+    .bg-zinc-200,
+    .bg-zinc-700 {
+      background: var(--border) !important;
+    }
+
+    /* Font mono */
+    .font-mono {
+      font-family: var(--font-mono) !important;
+    }
+
+    /* Dividers */
+    .divide-zinc-100 > * + *,
+    .divide-zinc-800 > * + * {
+      border-color: var(--border) !important;
+    }
+
+    /* Empty states */
+    .text-center.text-zinc-500 {
+      color: var(--text-muted) !important;
+    }
+
+    /* Scroll areas */
+    .overflow-auto,
+    .overflow-x-auto,
+    .overflow-y-auto {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) var(--bg);
+    }
+
+    .overflow-auto::-webkit-scrollbar,
+    .overflow-x-auto::-webkit-scrollbar,
+    .overflow-y-auto::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .overflow-auto::-webkit-scrollbar-track,
+    .overflow-x-auto::-webkit-scrollbar-track,
+    .overflow-y-auto::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    .overflow-auto::-webkit-scrollbar-thumb,
+    .overflow-x-auto::-webkit-scrollbar-thumb,
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .overflow-auto::-webkit-scrollbar-thumb:hover,
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover,
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+  }
+</style>

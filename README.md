@@ -23,20 +23,38 @@ npm run preview
 ```
 src/
 ├── components/
-│   └── SeasonalEffects.astro  # Seasonal visual effects (snow, leaves, etc.)
+│   ├── SeasonalEffects.astro  # Seasonal visual effects (snow, leaves, etc.)
+│   ├── CsvToolkit/            # CSV toolkit React components
+│   └── WebhookInspector/      # Webhook inspector React components
 ├── layouts/
 │   └── Layout.astro           # Base layout with nav/footer
+├── lib/                       # Shared utilities and engines
+│   ├── csv-parser.ts          # CSV parsing logic
+│   ├── diff-engine.ts         # Diff comparison engine
+│   ├── merge-engine.ts        # CSV merge logic
+│   ├── dedupe-engine.ts       # Deduplication logic
+│   ├── transform-engine.ts    # Data transformation logic
+│   └── upstash.ts             # Upstash Redis client
 ├── pages/
 │   ├── index.astro            # Homepage
 │   ├── services.astro         # Services & pricing
 │   ├── contact.astro          # Contact info
 │   ├── rss.xml.ts             # RSS feed
+│   ├── api/webhook/           # Webhook API endpoints
+│   ├── tools/
+│   │   ├── index.astro        # Tools listing
+│   │   ├── csv-toolkit.astro  # CSV toolkit tool
+│   │   └── webhook-inspector.astro
 │   ├── portfolio/
 │   │   ├── index.astro        # Portfolio listing
 │   │   └── *.astro            # Individual project pages
 │   └── blog/
 │       ├── index.astro        # Blog listing
 │       └── *.astro            # Individual blog posts
+├── styles/
+│   └── global.css             # Global styles
+└── types/
+    └── csv.ts                 # CSV type definitions
 ```
 
 ## Adding a Blog Post
