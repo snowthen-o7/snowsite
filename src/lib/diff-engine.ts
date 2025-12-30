@@ -36,6 +36,8 @@ export interface DiffOptions {
   caseSensitive?: boolean;
   /** Trim whitespace before comparison */
   trimWhitespace?: boolean;
+  /** Maximum rows to process per file (for performance on large files) */
+  maxRows?: number;
 }
 
 export interface DiffResult {
@@ -174,6 +176,7 @@ export class EfficientDiffer {
   private excludedPatterns: string[];
   private caseSensitive: boolean;
   private trimWhitespace: boolean;
+  private maxRows?: number;
 
   constructor(options: DiffOptions) {
     this.primaryKeys = options.primaryKeys;
@@ -181,6 +184,7 @@ export class EfficientDiffer {
     this.excludedPatterns = options.excludedPatterns ?? EXCLUDED_COLUMN_PATTERNS;
     this.caseSensitive = options.caseSensitive ?? true;
     this.trimWhitespace = options.trimWhitespace ?? true;
+    this.maxRows = options.maxRows;
   }
 
   /**
@@ -192,8 +196,29 @@ export class EfficientDiffer {
    * 3. Second pass on changed rows to collect detailed changes
    */
   computeDiff(prodCsv: ParsedCSV, devCsv: ParsedCSV): DiffResult {
-    const prodHeaders = new Set(prodCsv.headers);
-    const devHeaders = new Set(devCsv.headers);
+    // Apply maxRows limit if specified
+    let limitedProdCsv = prodCsv;
+    let limitedDevCsv = devCsv;
+
+    if (this.maxRows !== undefined && this.maxRows > 0) {
+      if (prodCsv.rows.length > this.maxRows) {
+        limitedProdCsv = {
+          ...prodCsv,
+          rows: prodCsv.rows.slice(0, this.maxRows),
+          rowCount: this.maxRows,
+        };
+      }
+      if (devCsv.rows.length > this.maxRows) {
+        limitedDevCsv = {
+          ...devCsv,
+          rows: devCsv.rows.slice(0, this.maxRows),
+          rowCount: this.maxRows,
+        };
+      }
+    }
+
+    const prodHeaders = new Set(limitedProdCsv.headers);
+    const devHeaders = new Set(limitedDevCsv.headers);
 
     // Validate primary keys exist
     const missingProd = this.primaryKeys.filter(k => !prodHeaders.has(k));
@@ -225,8 +250,8 @@ export class EfficientDiffer {
 
     // Process differences
     const diffStats = this.processDifferences(
-      prodCsv,
-      devCsv,
+      limitedProdCsv,
+      limitedDevCsv,
       commonKeys,
       comparisonKeys
     );
@@ -236,8 +261,8 @@ export class EfficientDiffer {
       common_keys: commonKeys.sort(),
       prod_only_keys: prodOnlyKeys.sort(),
       dev_only_keys: devOnlyKeys.sort(),
-      prod_row_count: prodCsv.rowCount,
-      dev_row_count: devCsv.rowCount,
+      prod_row_count: limitedProdCsv.rowCount,
+      dev_row_count: limitedDevCsv.rowCount,
     };
   }
 
@@ -500,13 +525,14 @@ export function diffCSV(
 ): DiffResult {
   // Auto-detect primary key if not provided
   const primaryKeys = options.primaryKeys ?? detectPrimaryKey(prodCsv);
-  
+
   const differ = new EfficientDiffer({
     primaryKeys,
     maxExamples: options.maxExamples ?? DEFAULT_MAX_EXAMPLES,
     excludedPatterns: options.excludedPatterns ?? EXCLUDED_COLUMN_PATTERNS,
     caseSensitive: options.caseSensitive ?? true,
     trimWhitespace: options.trimWhitespace ?? true,
+    maxRows: options.maxRows,
   });
 
   return differ.computeDiff(prodCsv, devCsv);

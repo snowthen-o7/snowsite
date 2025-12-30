@@ -110,6 +110,21 @@ Line 2"`;
 
     expect(result.rows[0].description).toBe('Line 1\nLine 2');
   });
+
+  it('handles UTF-8 BOM marker', () => {
+    // UTF-8 BOM: 0xEF 0xBB 0xBF followed by CSV content
+    const bom = '\uFEFF';
+    const content = `${bom}id,name
+1,Alice
+2,Bob`;
+
+    const result = parseCSVString(content);
+
+    // BOM should be handled - first header should be clean 'id'
+    expect(result.headers[0]).toBe('id');
+    expect(result.headers).toEqual(['id', 'name']);
+    expect(result.rowCount).toBe(2);
+  });
 });
 
 describe('detectCSVFormat', () => {

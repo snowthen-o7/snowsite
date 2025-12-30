@@ -211,6 +211,99 @@ describe('EfficientDiffer', () => {
       expect(example.changes[0].oldValue).toBe('Alice');
       expect(example.changes[0].newValue).toBe('Alicia');
     });
+
+    it('enforces maxExamples limit', () => {
+      // Create CSVs with many changes to test limit
+      const prodRows = [];
+      const devRows = [];
+      for (let i = 1; i <= 10; i++) {
+        prodRows.push({ id: String(i), name: `Name${i}` });
+        devRows.push({ id: String(i), name: `Changed${i}` });
+      }
+
+      const prod = createCSV(['id', 'name'], prodRows);
+      const dev = createCSV(['id', 'name'], devRows);
+
+      const differ = new EfficientDiffer({ primaryKeys: ['id'], maxExamples: 3 });
+      const result = differ.computeDiff(prod, dev);
+
+      // Should have at most 3 examples despite 10 changes
+      expect(Object.keys(result.example_ids).length).toBeLessThanOrEqual(3);
+      expect(result.rows_updated).toBe(10);
+    });
+
+    it('respects maxRows limit', () => {
+      // Create CSVs with many rows
+      const prodRows = [];
+      const devRows = [];
+      for (let i = 1; i <= 100; i++) {
+        prodRows.push({ id: String(i), name: `Name${i}` });
+        devRows.push({ id: String(i), name: `Changed${i}` });
+      }
+
+      const prod = createCSV(['id', 'name'], prodRows);
+      const dev = createCSV(['id', 'name'], devRows);
+
+      // With maxRows=10, should only process first 10 rows
+      const differ = new EfficientDiffer({ primaryKeys: ['id'], maxRows: 10 });
+      const result = differ.computeDiff(prod, dev);
+
+      // Should report limited row counts
+      expect(result.prod_row_count).toBe(10);
+      expect(result.dev_row_count).toBe(10);
+
+      // Should only have changes from first 10 rows
+      expect(result.rows_updated).toBe(10);
+    });
+
+    it('returns complete result structure', () => {
+      // Integration test verifying all required fields are present
+      const prod = createCSV(['sku', 'locale', 'title', 'price'], [
+        { sku: 'ABC', locale: 'en', title: 'Widget', price: '10' },
+        { sku: 'ABC', locale: 'fr', title: 'Widget FR', price: '12' },
+        { sku: 'DEF', locale: 'en', title: 'Gadget', price: '20' },
+      ]);
+
+      const dev = createCSV(['sku', 'locale', 'title', 'price'], [
+        { sku: 'ABC', locale: 'en', title: 'Widget Updated', price: '10' },
+        { sku: 'ABC', locale: 'fr', title: 'Widget FR', price: '15' },
+        { sku: 'XYZ', locale: 'en', title: 'New Item', price: '30' },
+      ]);
+
+      const differ = new EfficientDiffer({
+        primaryKeys: ['sku', 'locale'],
+        maxExamples: 10,
+      });
+      const result = differ.computeDiff(prod, dev);
+
+      // Verify complete result structure (mirrors Python's test_full_diff_workflow)
+      const requiredKeys = [
+        'rows_added',
+        'rows_removed',
+        'rows_updated',
+        'rows_updated_excluded_only',
+        'detailed_key_update_counts',
+        'common_keys',
+        'prod_only_keys',
+        'dev_only_keys',
+        'prod_row_count',
+        'dev_row_count',
+        'example_ids',
+        'example_ids_added',
+        'example_ids_removed',
+      ];
+
+      for (const key of requiredKeys) {
+        expect(result).toHaveProperty(key);
+      }
+
+      // Verify counts make sense
+      expect(result.rows_added).toBe(1); // XYZ,en added
+      expect(result.rows_removed).toBe(1); // DEF,en removed
+      expect(result.rows_updated).toBe(2); // ABC,en and ABC,fr changed
+      expect(result.prod_row_count).toBe(3);
+      expect(result.dev_row_count).toBe(3);
+    });
   });
 });
 

@@ -16,6 +16,7 @@ export function DiffTab() {
   const [primaryKey, setPrimaryKey] = useState<string>('');
   const [caseSensitive, setCaseSensitive] = useState(true);
   const [trimWhitespace, setTrimWhitespace] = useState(true);
+  const [maxRows, setMaxRows] = useState<string>('');
 
   const handleFileA = useCallback((csv: ParsedCSV) => {
     setCsvA(csv);
@@ -59,6 +60,7 @@ export function DiffTab() {
         trimWhitespace,
         excludedPatterns: EXCLUDED_COLUMN_PATTERNS,
         maxExamples: 10,
+        maxRows: maxRows ? parseInt(maxRows, 10) : undefined,
       });
 
       setResult(diffResult);
@@ -67,7 +69,7 @@ export function DiffTab() {
     } finally {
       setIsComparing(false);
     }
-  }, [csvA, csvB, primaryKey, caseSensitive, trimWhitespace]);
+  }, [csvA, csvB, primaryKey, caseSensitive, trimWhitespace, maxRows]);
 
   const exportResults = useCallback(() => {
     if (!result) return;
@@ -91,6 +93,7 @@ export function DiffTab() {
     setResult(null);
     setError(null);
     setPrimaryKey('');
+    setMaxRows('');
   }, []);
 
   const canCompare = csvA && csvB && !isComparing;
@@ -199,6 +202,19 @@ export function DiffTab() {
                   onChange={(e) => setTrimWhitespace(e.target.checked)}
                 />
                 <span> Trim whitespace</span>
+              </label>
+
+              <label htmlFor="max-rows" className="row-limit-label">
+                Row limit
+                <input
+                  id="max-rows"
+                  type="number"
+                  min="1"
+                  value={maxRows}
+                  onChange={(e) => setMaxRows(e.target.value)}
+                  placeholder="All rows"
+                  className="row-limit-input"
+                />
               </label>
             </div>
 
@@ -521,6 +537,35 @@ export function DiffTab() {
 
         .checkbox-label input {
           accent-color: var(--accent);
+        }
+
+        .row-limit-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8rem;
+          color: var(--text-muted);
+        }
+
+        .row-limit-input {
+          width: 100px;
+          padding: 0.25rem 0.5rem;
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+          background: var(--bg-elevated);
+          border: 1px solid var(--border);
+          border-radius: 4px;
+          color: var(--text);
+        }
+
+        .row-limit-input:focus {
+          outline: none;
+          border-color: var(--accent);
+        }
+
+        .row-limit-input::placeholder {
+          color: var(--text-muted);
+          opacity: 0.6;
         }
 
         .option-group.info p {
