@@ -1,0 +1,130 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="E-Commerce API Collections" description="Comprehensive Postman collections for popular e-commerce platform APIs">
+  <a href="/portfolio" class="back-link">← Back to Portfolio</a>
+
+  <h1>E-Commerce API Collections</h1>
+  <p class="subtitle">Comprehensive Postman collections for popular e-commerce platform APIs</p>
+
+  <div class="project-links">
+    <a href="https://github.com/snowthen-o7/eCommercePostmanCollections" target="_blank" rel="noopener">GitHub →</a>
+  </div>
+
+  <section>
+    <h2>The Problem</h2>
+    <p>
+      Testing e-commerce platform APIs meant constantly switching between documentation
+      sites, manually managing credentials, and dealing with inconsistent request formats
+      across platforms. There was no unified way to test Shopify, BigCommerce, WooCommerce,
+      and other platforms side by side.
+    </p>
+  </section>
+
+  <section>
+    <h2>The Solution</h2>
+    <p>
+      I created a comprehensive set of Postman collections covering major e-commerce
+      platforms, with consistent organization, automatic ID extraction, and smart test
+      logic that skips gracefully when credentials aren't configured.
+    </p>
+  </section>
+
+  <section>
+    <h2>Collections Included</h2>
+    <ul>
+      <li><strong>Shopify GraphQL API</strong> — 30 requests with proper GraphQL body type for Postman's native features</li>
+      <li><strong>Shopify REST API</strong> — 19 requests covering products, variants, inventory, metafields</li>
+      <li><strong>BigCommerce API</strong> — 15 requests across catalog, orders, customers</li>
+      <li><strong>WooCommerce API</strong> — 19 requests with full REST API v3 coverage</li>
+      <li><strong>Magento API</strong> — Catalog and store configuration</li>
+      <li><strong>TrustPilot API</strong> — Product reviews integration</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Key Features</h2>
+    <ul>
+      <li><strong>Automatic ID Extraction</strong> — List endpoints automatically save IDs for use in subsequent requests</li>
+      <li><strong>Smart Skip Logic</strong> — Tests pass when credentials aren't configured instead of failing</li>
+      <li><strong>Environment-Based Config</strong> — Switch between stores with one click</li>
+      <li><strong>Cross-Platform Test Runners</strong> — Both bash and PowerShell scripts included</li>
+      <li><strong>CI/CD Ready</strong> — GitHub Actions workflow for automated testing</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Technical Highlights</h2>
+    <ul>
+      <li><strong>GraphQL mode</strong> — Shopify GraphQL requests use proper <code>"mode": "graphql"</code> with separate query and variables fields</li>
+      <li><strong>Consistent naming</strong> — Platform-prefixed variables for clarity (<code>shopify_token</code>, <code>bigcommerce_store_hash</code>, etc.)</li>
+      <li><strong>Pre-request scripts</strong> — Automatic token refresh and request signing where needed</li>
+      <li><strong>Secret variable types</strong> — Credentials use Postman's secret type for security</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Impact</h2>
+    <p>
+      What used to require jumping between multiple tools and documentation sites now
+      lives in one organized workspace. New team members can start testing immediately,
+      and the CI/CD integration catches API changes before they hit production.
+    </p>
+  </section>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+  }
+
+  ul li strong {
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .project-links a {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .project-links a:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+  }
+</style>

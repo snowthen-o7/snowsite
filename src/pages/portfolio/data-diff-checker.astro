@@ -8,10 +8,15 @@ import Layout from '../../layouts/Layout.astro';
   <h1>Data Diff Checker</h1>
   <p class="subtitle">CSV regression testing tool for API workflows</p>
 
+  <div class="project-links">
+    <a href="https://github.com/snowthen-o7/data-diff-checker" target="_blank" rel="noopener">GitHub →</a>
+    <a href="/tools/csv-toolkit">Try the Web Version →</a>
+  </div>
+
   <section>
     <h2>The Problem</h2>
     <p>
-      When working with data feed systems like Feedonomics, you often need to compare 
+      When working with e-commerce data feeds, you often need to compare
       API responses between production and development environments. A change that 
       looks harmless in code can silently break field mappings, strip HTML content, 
       or introduce subtle data inconsistencies.
@@ -124,5 +129,26 @@ import Layout from '../../layouts/Layout.astro';
   ul li strong {
     font-family: var(--font-mono);
     color: var(--accent);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .project-links a {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .project-links a:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
   }
 </style>

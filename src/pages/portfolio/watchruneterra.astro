@@ -8,6 +8,10 @@ import Layout from '../../layouts/Layout.astro';
   <h1>WatchRuneterra</h1>
   <p class="subtitle">League of Legends analytics platform with Bloomberg Terminal-inspired UI</p>
 
+  <div class="project-links">
+    <a href="https://watch-runeterra.vercel.app/lol" target="_blank" rel="noopener">Live Site →</a>
+  </div>
+
   <section>
     <h2>Overview</h2>
     <p>
@@ -127,5 +131,26 @@ import Layout from '../../layouts/Layout.astro';
   ul li strong {
     font-family: var(--font-mono);
     color: var(--accent);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .project-links a {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .project-links a:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
   }
 </style>
