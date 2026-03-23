@@ -2,37 +2,62 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Home">
+<Layout title="Alex Diaz — E-commerce Tools & Integrations" wide>
   <section class="hero">
-    <h1>Alex Diaz</h1>
-    <p class="subtitle">E-commerce & API Integration Specialist</p>
+    <h1>Shopify catalog not syncing?<br/>Product feeds breaking silently?</h1>
+    <p class="subtitle">I build the tools and integrations that fix that.</p>
   </section>
 
   <section class="intro">
     <p>
-      I help companies connect their systems, optimize data feeds, and build
-      integrations that actually work. Specializing in Shopify, e-commerce platforms,
-      and custom API development.
+      Years of debugging the places Shopify, Meta, and Google disagree taught me
+      where e-commerce data pipelines break. Now I build tools so you don't have to
+      figure it out yourself.
     </p>
-    <p>
-      After years of debugging data pipelines and untangling complex integrations, 
-      I've developed a knack for finding where things break—and fixing them before 
-      they become problems.
-    </p>
+  </section>
+
+  <section class="products">
+    <h2>Tools & Products</h2>
+    <div class="product-grid">
+      <a href="https://pipe.snowforge.dev" class="product-card featured">
+        <span class="product-badge">SaaS</span>
+        <h3>SnowPipe</h3>
+        <p>Sync your Shopify or WooCommerce catalog to Google Merchant, Meta, Square, and more. Automated, scheduled, monitored.</p>
+        <span class="product-cta">Try free →</span>
+      </a>
+      <a href="/tools/csv-toolkit" class="product-card">
+        <span class="product-badge free">Free</span>
+        <h3>CSV Toolkit</h3>
+        <p>Compare, merge, deduplicate, and transform CSV files. Runs in your browser.</p>
+        <span class="product-cta">Use now →</span>
+      </a>
+      <a href="/tools/webhook-inspector" class="product-card">
+        <span class="product-badge free">Free</span>
+        <h3>Webhook Inspector</h3>
+        <p>Capture and debug incoming webhooks in real-time. Built for API development.</p>
+        <span class="product-cta">Use now →</span>
+      </a>
+      <a href="/tools" class="product-card">
+        <span class="product-badge soon">Coming Soon</span>
+        <h3>MCP Servers</h3>
+        <p>Meta Catalog, Shopify Bulk Operations, and Multi-Channel Feed Validator for AI-assisted workflows.</p>
+        <span class="product-cta">View all tools →</span>
+      </a>
+    </div>
   </section>
 
   <section class="links">
     <a href="/portfolio" class="link-card">
       <span class="link-label">Portfolio</span>
-      <span class="link-desc">Projects and case studies</span>
+      <span class="link-desc">Projects and integrations</span>
     </a>
     <a href="/blog" class="link-card">
       <span class="link-label">Blog</span>
-      <span class="link-desc">Technical writing and devlogs</span>
+      <span class="link-desc">Shopify, feeds, and debugging</span>
     </a>
     <a href="/services" class="link-card">
       <span class="link-label">Services</span>
-      <span class="link-desc">How I can help</span>
+      <span class="link-desc">Audits and consulting</span>
     </a>
     <a href="/contact" class="link-card">
       <span class="link-label">Contact</span>
@@ -49,13 +74,15 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .hero h1 {
-    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
   }
 
   .subtitle {
     font-family: var(--font-mono);
     color: var(--accent);
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin-bottom: 0;
   }
 
@@ -63,13 +90,97 @@ import Layout from '../layouts/Layout.astro';
     margin-bottom: 3rem;
   }
 
+  .intro {
+    max-width: 680px;
+  }
+
   .intro p {
     font-size: 1.1rem;
   }
 
+  .products {
+    margin-bottom: 3rem;
+  }
+
+  .products h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+  }
+
+  .product-card.featured {
+    border-color: var(--accent-dim);
+  }
+
+  .product-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.5rem;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 4px;
+    width: fit-content;
+    margin-bottom: 0.75rem;
+  }
+
+  .product-badge.free {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .product-badge.soon {
+    background: transparent;
+    border: 1px solid var(--accent-dim);
+    color: var(--accent-dim);
+  }
+
+  .product-card h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .product-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .product-cta {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+
   .links {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
   }
 
@@ -101,6 +212,11 @@ import Layout from '../layouts/Layout.astro';
   }
 
   @media (max-width: 500px) {
+    .hero h1 {
+      font-size: 1.4rem;
+    }
+
+    .product-grid,
     .links {
       grid-template-columns: 1fr;
     }

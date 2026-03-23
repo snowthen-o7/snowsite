@@ -1,57 +1,92 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const tools = [
+const freeTools = [
   {
     title: 'CSV Toolkit',
     description: 'Compare, merge, deduplicate, and transform CSV files. All processing happens in your browser.',
     href: '/tools/csv-toolkit',
     icon: '',
-    status: 'live',
+    status: 'live' as const,
   },
   {
     title: 'Webhook Inspector',
     description: 'Capture, inspect, and debug incoming webhooks in real-time. Perfect for API development.',
     href: '/tools/webhook-inspector',
     icon: '',
-    status: 'live',
+    status: 'live' as const,
   },
 ];
+
+const paidTools = [
+  {
+    title: 'Meta Commerce Catalog MCP',
+    description: 'Connect AI assistants to Meta\'s Commerce Catalog API. Validate feeds, debug disapprovals, and manage product catalogs through natural language.',
+    href: '#',
+    icon: '',
+    status: 'coming-soon' as const,
+    distribution: 'MCPize',
+  },
+  {
+    title: 'Shopify Bulk Catalog MCP',
+    description: 'Handle Shopify bulk operations (JSONL) correctly at scale. Built-in timeout handling and presentment price optimization.',
+    href: '#',
+    icon: '',
+    status: 'coming-soon' as const,
+    distribution: 'MCPize',
+  },
+  {
+    title: 'Multi-Channel Feed Validator MCP',
+    description: 'Validate product feeds against Google, Meta, and TikTok specs before they break your ads.',
+    href: '#',
+    icon: '',
+    status: 'coming-soon' as const,
+    distribution: 'MCPize',
+  },
+];
+
+const tools = [...freeTools, ...paidTools];
 ---
 
-<Layout title="Developer Tools" description="Free browser-based tools for developers: CSV comparison, webhook debugging, and more.">
+<Layout title="Developer Tools" description="E-commerce developer tools: CSV comparison, webhook debugging, MCP servers for Shopify, Meta, and more." wide>
   <div class="tools-page">
     <header class="hero">
       <h1>Developer Tools</h1>
-      <p class="subtitle">Free, privacy-focused tools for data and API work</p>
+      <p class="subtitle">Tools for e-commerce data, feeds, and API work</p>
     </header>
 
+    <h2 class="section-title">Free Tools</h2>
     <div class="tools-list">
-      {tools.map((tool) => (
-        tool.status === 'live' ? (
-          <a href={tool.href} class="tool-card">
-            <span class="tool-icon">{tool.icon}</span>
-            <div class="tool-content">
-              <h2>{tool.title}</h2>
-              <p>{tool.description}</p>
-            </div>
-            <span class="arrow">→</span>
-          </a>
-        ) : (
-          <div class="tool-card disabled">
-            <span class="tool-icon">{tool.icon}</span>
-            <div class="tool-content">
-              <h2>{tool.title} <span class="badge">Coming Soon</span></h2>
-              <p>{tool.description}</p>
-            </div>
+      {freeTools.map((tool) => (
+        <a href={tool.href} class="tool-card">
+          <span class="tool-icon">{tool.icon}</span>
+          <div class="tool-content">
+            <h2>{tool.title}</h2>
+            <p>{tool.description}</p>
           </div>
-        )
+          <span class="arrow">→</span>
+        </a>
+      ))}
+    </div>
+
+    <h2 class="section-title">MCP Servers <span class="badge accent">New</span></h2>
+    <p class="section-desc">AI-powered tools for e-commerce workflows. Connect these to Claude, Cursor, or any MCP-compatible client.</p>
+    <div class="tools-list">
+      {paidTools.map((tool) => (
+        <div class="tool-card disabled">
+          <span class="tool-icon">{tool.icon}</span>
+          <div class="tool-content">
+            <h2>{tool.title} <span class="badge">{tool.distribution}</span></h2>
+            <p>{tool.description}</p>
+          </div>
+          <span class="badge coming">Coming Soon</span>
+        </div>
       ))}
     </div>
 
     <section class="cta">
       <h2>Need a Custom Tool?</h2>
-      <p>I build data processing and integration tools for businesses.</p>
+      <p>I build data processing and integration tools for e-commerce businesses.</p>
       <a href="/contact" class="cta-button">Get in Touch</a>
     </section>
   </div>
@@ -78,17 +113,17 @@ const tools = [
   }
 
   .tools-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1rem;
     margin-bottom: 3rem;
   }
 
   .tool-card {
     display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 1.25rem 1.5rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -99,7 +134,7 @@ const tools = [
 
   .tool-card:hover:not(.disabled) {
     border-color: var(--accent);
-    transform: translateX(4px);
+    background: var(--bg-hover);
   }
 
   .tool-card.disabled {
@@ -114,6 +149,8 @@ const tools = [
 
   .tool-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .tool-content h2 {
@@ -131,6 +168,20 @@ const tools = [
     line-height: 1.5;
   }
 
+  .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+  }
+
   .badge {
     font-family: var(--font-mono);
     font-size: 0.65rem;
@@ -142,6 +193,18 @@ const tools = [
     border: 1px solid var(--border);
     color: var(--text-muted);
     border-radius: 4px;
+  }
+
+  .badge.accent {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+
+  .badge.coming {
+    border-color: var(--accent-dim);
+    color: var(--accent-dim);
+    flex-shrink: 0;
   }
 
   .arrow {
