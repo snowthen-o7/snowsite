@@ -1,0 +1,23 @@
+name: Seasonal rebuild
+
+on:
+  schedule:
+    # 00:00 UTC on the 1st of March, June, September, December.
+    # Triggers a Vercel redeploy so SeasonalEffects picks up the new season
+    # (season is computed at build time from `new Date().getMonth()`).
+    - cron: "0 0 1 3,6,9,12 *"
+  workflow_dispatch: {}
+
+jobs:
+  trigger-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK_URL" ]; then
+            echo "VERCEL_DEPLOY_HOOK_URL secret is not set" >&2
+            exit 1
+          fi
+          curl -fsS -X POST "$HOOK_URL"
