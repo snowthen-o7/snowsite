@@ -16,6 +16,26 @@ const freeTools = [
     icon: '',
     status: 'live' as const,
   },
+  {
+    title: 'Shopify Bulk JSONL Processor',
+    description: 'Python CLI for processing Shopify bulk operation JSONL exports. Trigger, download, parse parent/child relationships, flatten to CSV/JSON. Handles 50K+ product catalogs with constant memory.',
+    href: 'https://github.com/snowthen-o7/shopify-bulk',
+    icon: '',
+    status: 'live' as const,
+  },
+];
+
+const gumroadTools = [
+  {
+    title: 'E-Commerce Product Feed Audit Tool',
+    description: 'Automated audit for Google Shopping, Meta Catalog, and Shopify feeds. 130+ checks, color-coded report in 30 seconds, runs inside Google Sheets. Catches missing GTINs, stale prices, broken images, and disapproval risks before they hit your ads.',
+    href: 'https://alexdiazme.gumroad.com/l/feed-audit-tool',
+    icon: '',
+    status: 'live' as const,
+    distribution: 'Gumroad',
+    price: '$29',
+    external: true,
+  },
 ];
 
 const paidTools = [
@@ -45,7 +65,7 @@ const paidTools = [
   },
 ];
 
-const tools = [...freeTools, ...paidTools];
+const tools = [...freeTools, ...gumroadTools, ...paidTools];
 ---
 
 <Layout title="Developer Tools" description="E-commerce developer tools: CSV comparison, webhook debugging, MCP servers for Shopify, Meta, and more." wide>
@@ -69,7 +89,41 @@ const tools = [...freeTools, ...paidTools];
       ))}
     </div>
 
-    <h2 class="section-title">MCP Servers <span class="badge accent">New</span></h2>
+    <h2 class="section-title">Paid Tools <span class="badge accent">New</span></h2>
+    <p class="section-desc">Downloadable tools for feed work. Delivered through Gumroad with instant download.</p>
+    <div class="tools-list">
+      {gumroadTools.map((tool) => (
+        tool.status === 'live' ? (
+          <a href={tool.href} target="_blank" rel="noopener noreferrer" class="tool-card">
+            <span class="tool-icon">{tool.icon}</span>
+            <div class="tool-content">
+              <h2>
+                {tool.title}
+                <span class="badge">{tool.distribution}</span>
+                <span class="badge price">{tool.price}</span>
+              </h2>
+              <p>{tool.description}</p>
+            </div>
+            <span class="arrow">↗</span>
+          </a>
+        ) : (
+          <div class="tool-card disabled">
+            <span class="tool-icon">{tool.icon}</span>
+            <div class="tool-content">
+              <h2>
+                {tool.title}
+                <span class="badge">{tool.distribution}</span>
+                <span class="badge price">{tool.price}</span>
+              </h2>
+              <p>{tool.description}</p>
+            </div>
+            <span class="badge coming">Coming Soon</span>
+          </div>
+        )
+      ))}
+    </div>
+
+    <h2 class="section-title">MCP Servers</h2>
     <p class="section-desc">AI-powered tools for e-commerce workflows. Connect these to Claude, Cursor, or any MCP-compatible client.</p>
     <div class="tools-list">
       {paidTools.map((tool) => (
@@ -205,6 +259,12 @@ const tools = [...freeTools, ...paidTools];
     border-color: var(--accent-dim);
     color: var(--accent-dim);
     flex-shrink: 0;
+  }
+
+  .badge.price {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
   }
 
   .arrow {

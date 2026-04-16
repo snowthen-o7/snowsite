@@ -1,0 +1,339 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = "Why Your Shopify Bulk Operation Keeps Timing Out (And How to Fix It)";
+const date = "2026-04-16";
+const description = "Shopify bulk operations work great on small stores. On 10K+ product catalogs, they time out. Here's what's actually happening and how to fix it.";
+---
+
+<Layout title={title} description={description}>
+  <a href="/blog" class="back-link">&larr; Back to Blog</a>
+
+  <article>
+    <header>
+      <time datetime={date}>April 16, 2026</time>
+      <h1>{title}</h1>
+    </header>
+
+    <h2>The Problem</h2>
+
+    <p>
+      You're running a Shopify bulk operation to export your product catalog. Maybe you're
+      building a Google Shopping feed, migrating to another platform, or pulling data into a
+      warehouse for analysis. You write a reasonable GraphQL query, kick off the bulk operation,
+      and it works perfectly on your dev store with 500 products.
+    </p>
+
+    <p>
+      Then you point it at your production store with 10,000+ products. The bulk operation
+      runs for 10 minutes and times out. Or it completes but the JSONL file is suspiciously
+      small, missing half your catalog. You check the <code>status</code> field and it says
+      <code>COMPLETED</code>, but the <code>objectCount</code> doesn't match what you expected.
+    </p>
+
+    <p>
+      This is one of the most frustrating issues with the Shopify Bulk Operations API because
+      it doesn't fail loudly. It just quietly returns partial data, or stalls until the
+      operation expires. And the fix isn't obvious from the documentation.
+    </p>
+
+    <h2>Why It Happens</h2>
+
+    <p>
+      Shopify's Bulk Operations API works by taking your GraphQL query and internally paginating
+      through the results. You don't pass <code>first</code> or <code>after</code> cursor arguments
+      on the top-level connection; Shopify handles that for you. But you <em>do</em> control
+      the nested connections inside your query, and that's where the problem lives.
+    </p>
+
+    <p>
+      The most common culprit is <code>presentmentPrices</code>. Every product variant in
+      Shopify has presentment prices for each market and currency combination you've configured.
+      If you're selling internationally, you might have 30&ndash;50 markets set up. Now do the math:
+    </p>
+
+    <pre><code>50 markets × 10,000 products × 3 variants each = 1,500,000 price records</code></pre>
+
+    <p>
+      That's 1.5 million additional rows of data that your bulk operation has to traverse and
+      serialize into the JSONL output, on top of the product and variant data itself. The bulk
+      operation doesn't just time out from the volume. The internal query planner has to
+      resolve each of those nested connections, and Shopify imposes an execution time limit on
+      the entire operation.
+    </p>
+
+    <p>
+      The same problem applies to other deeply nested connections: <code>metafields</code>
+      without a limit, <code>images</code> on products with hundreds of media items, or
+      <code>inventoryLevels</code> across dozens of locations. Any connection that fans out
+      multiplicatively will blow up your execution time.
+    </p>
+
+    <h2>The Fix</h2>
+
+    <p>
+      Here's a query that looks reasonable but will time out on large catalogs:
+    </p>
+
+    <pre><code>mutation &#123;
+  bulkOperationRunQuery(
+    query: """
+    &#123;
+      products &#123;
+        edges &#123;
+          node &#123;
+            id
+            title
+            handle
+            vendor
+            productType
+            variants &#123;
+              edges &#123;
+                node &#123;
+                  id
+                  sku
+                  price
+                  inventoryQuantity
+                  presentmentPrices &#123;
+                    edges &#123;
+                      node &#123;
+                        price &#123;
+                          amount
+                          currencyCode
+                        &#125;
+                        compareAtPrice &#123;
+                          amount
+                          currencyCode
+                        &#125;
+                      &#125;
+                    &#125;
+                  &#125;
+                &#125;
+              &#125;
+            &#125;
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+    """
+  ) &#123;
+    bulkOperation &#123;
+      id
+      status
+    &#125;
+    userErrors &#123;
+      field
+      message
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+    <p>
+      The <code>presentmentPrices</code> connection has no limit, so Shopify will try to
+      return every price for every market for every variant. Here's the fixed version:
+    </p>
+
+    <pre><code>mutation &#123;
+  bulkOperationRunQuery(
+    query: """
+    &#123;
+      products &#123;
+        edges &#123;
+          node &#123;
+            id
+            title
+            handle
+            vendor
+            productType
+            variants &#123;
+              edges &#123;
+                node &#123;
+                  id
+                  sku
+                  price
+                  inventoryQuantity
+                  presentmentPrices(first: 5) &#123;
+                    edges &#123;
+                      node &#123;
+                        price &#123;
+                          amount
+                          currencyCode
+                        &#125;
+                        compareAtPrice &#123;
+                          amount
+                          currencyCode
+                        &#125;
+                      &#125;
+                    &#125;
+                  &#125;
+                &#125;
+              &#125;
+            &#125;
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+    """
+  ) &#123;
+    bulkOperation &#123;
+      id
+      status
+    &#125;
+    userErrors &#123;
+      field
+      message
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+    <p>The key changes:</p>
+
+    <h3>1. Limit nested connections</h3>
+
+    <p>
+      Add <code>first: N</code> to any nested connection that can fan out.
+      <code>presentmentPrices(first: 5)</code> will return prices for your top 5 markets
+      instead of all 50. If you only sell in USD and EUR, <code>first: 2</code> is plenty.
+    </p>
+
+    <h3>2. Only request fields you need</h3>
+
+    <p>
+      Don't pull <code>descriptionHtml</code> if you're building a price feed. Don't pull
+      <code>images</code> if you only need SKUs. Every field adds serialization time. Be
+      surgical with your selection set.
+    </p>
+
+    <h3>3. Split large catalogs into date ranges</h3>
+
+    <p>
+      If you genuinely need all presentment prices for all products, break the operation into
+      smaller chunks using a query filter:
+    </p>
+
+    <pre><code># First batch: products created before 2025
+products(query: "created_at:&lt;2025-01-01") &#123;
+  ...
+&#125;
+
+# Second batch: products created in 2025
+products(query: "created_at:&gt;=2025-01-01 AND created_at:&lt;2026-01-01") &#123;
+  ...
+&#125;
+
+# Third batch: products created in 2026
+products(query: "created_at:&gt;=2026-01-01") &#123;
+  ...
+&#125;</code></pre>
+
+    <p>
+      Run each as a separate bulk operation (one at a time, since Shopify allows only one bulk
+      operation per app in API versions before 2026-01), then merge the results.
+    </p>
+
+    <h3>4. Poll with exponential backoff</h3>
+
+    <p>
+      Don't poll for completion every second. Bulk operations on large stores can take
+      5&ndash;15 minutes. Polling aggressively doesn't make them faster and it eats into
+      your API rate limit. Use exponential backoff:
+    </p>
+
+    <pre><code>async function pollBulkOperation(client, operationId) &#123;
+  let delay = 2000;  // Start at 2 seconds
+  const maxDelay = 30000;  // Cap at 30 seconds
+
+  while (true) &#123;
+    const result = await client.query(&#123;
+      data: POLL_QUERY,
+      variables: &#123; id: operationId &#125;
+    &#125;);
+
+    const status = result.body.data.node.status;
+
+    if (status === 'COMPLETED') &#123;
+      return result.body.data.node.url;
+    &#125;
+
+    if (status === 'FAILED' || status === 'CANCELED') &#123;
+      throw new Error(`Bulk operation $&#123;status&#125;`);
+    &#125;
+
+    await sleep(delay);
+    delay = Math.min(delay * 1.5, maxDelay);
+  &#125;
+&#125;</code></pre>
+
+    <p>
+      Alternatively, use webhooks. Register for the <code>bulk_operations/finish</code>
+      webhook topic and let Shopify tell you when it's done instead of asking repeatedly.
+    </p>
+
+    <h2>Going Further</h2>
+
+    <p>
+      If you just need to run a one-off export or build it into a script, I open-sourced
+      a Python CLI tool that handles the full lifecycle: trigger the bulk operation, poll
+      for completion, download the result, parse the nested JSONL, and flatten it into
+      clean CSV or JSON. It handles all the edge cases described in this post (streaming,
+      parent/child assembly, inventory aggregation by location, presentment price limiting).
+    </p>
+
+    <pre><code>pip install shopify-bulk
+
+# Fetch your catalog from Shopify
+shopify-bulk fetch --shop mystore.myshopify.com --token shpat_xxxxx -o export.jsonl
+
+# Flatten to CSV
+shopify-bulk process export.jsonl -c products -o catalog.csv</code></pre>
+
+    <p>
+      Source and docs on GitHub:
+      <a href="https://github.com/snowthen-o7/shopify-bulk">snowthen-o7/shopify-bulk</a>
+    </p>
+
+    <p>
+      If you're doing this kind of catalog export regularly (daily feeds, ongoing syncs,
+      warehouse ETL), you'll eventually want scheduling, transforms, and multi-destination
+      pushes on top of the raw export. That's what
+      <a href="https://pipe.snowforge.dev">SnowPipe</a> is for: a pipeline tool that handles
+      Shopify catalog syncs with the batching and backoff strategies baked in, so you don't
+      have to re-discover these edge cases every time you scale to a new store.
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  article header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  article header time {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  article header h1 {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+  }
+
+  article h2 {
+    margin-top: 2.5rem;
+  }
+</style>
