@@ -24,3 +24,19 @@ Thumbs.db
 
 # Astro
 .astro/
+
+.vercel
+.env*.local
+
+# npmrc with GitHub token
+.npmrc
+
+# Claude Code local config
+.claude/
+
+# Cline (other AI tool) config
+.clinerules
+
+# Local dev screenshot artifacts
+screenshot.mjs
+screenshots/

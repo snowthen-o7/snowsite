@@ -1,6 +1,12 @@
-# Tools Documentation
+# SnowSite Documentation
 
 Internal documentation for the tools available on the site. This directory is not served publicly.
+
+## Infrastructure
+
+| Document | Description |
+|----------|-------------|
+| **[INFRASTRUCTURE.md](./INFRASTRUCTURE.md)** | **Complete infrastructure documentation** - AWS, deployment, services |
 
 ## Available Tools
 

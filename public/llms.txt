@@ -1,0 +1,31 @@
+# alexdiaz.me
+
+> Personal website and portfolio of Alex Diaz, an e-commerce and API integration specialist, featuring free developer tools for data processing and webhook debugging.
+
+Alex Diaz specializes in e-commerce integrations (Shopify, BigCommerce, WooCommerce), custom API development, data pipeline optimization, and data feed auditing. The site showcases professional services, portfolio projects, a technical blog, and provides two free browser-based developer tools.
+
+## Tools
+
+- [CSV Toolkit](/tools/csv-toolkit): Browser-based CSV processing suite with 100% client-side processing. Includes diff comparison (hash-based algorithm for comparing two CSV files), merge (join CSVs by key column with left/right/inner/outer joins), dedupe (remove duplicate rows), and transform (filter, select, rename columns, sort). Built with PapaParse. No data leaves your device.
+
+- [Webhook Inspector](/tools/webhook-inspector): Real-time webhook capture and debugging tool. Create unique temporary webhook URLs, capture incoming HTTP requests, inspect headers/body/query params in real-time via Server-Sent Events. 24-hour TTL for endpoints. Powered by Upstash Redis.
+
+## Services
+
+- [Services](/services): Professional consulting and development services including Data Feed Audit, Integration Development for e-commerce platforms, API Development & Testing, Data Pipeline Optimization, and Technical Consulting.
+
+## Portfolio
+
+- [Portfolio](/portfolio): Featured projects including WatchRuneterra (League of Legends analytics platform), Data Diff Checker (Python CSV regression testing tool), and E-Commerce API Collections (Postman collections for major platforms).
+
+## Blog
+
+- [Blog](/blog): Technical writing and devlogs covering e-commerce integrations, API development, and data processing topics.
+
+## Contact
+
+- [Contact](/contact): Get in touch for consulting inquiries or project discussions.
+
+## Technical Details
+
+Built with Astro 5, React 19, TypeScript, and Tailwind CSS. Deployed on Vercel. The CSV Toolkit uses a memory-efficient hash-based comparison algorithm ported from Python. The Webhook Inspector uses Upstash Redis for serverless data persistence with real-time SSE updates.
