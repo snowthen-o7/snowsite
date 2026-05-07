@@ -1,0 +1,268 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = "How to Audit a Shopify Product Feed Before You Push to Google Merchant Center";
+const date = "2026-05-06";
+const description = "Most Google Merchant Center disapprovals are preventable if you audit your Shopify feed before sync. Here's the checklist I use on real catalogs.";
+---
+
+<Layout title={title} description={description}>
+  <a href="/blog" class="back-link">&larr; Back to Blog</a>
+
+  <article>
+    <header>
+      <time datetime={date}>May 6, 2026</time>
+      <h1>{title}</h1>
+    </header>
+
+    <h2>The Pattern Every Merchant Hits Eventually</h2>
+
+    <p>
+      You connect Shopify to Google Merchant Center, kick off the first sync, and the dashboard
+      lights up red. Hundreds of disapprovals. Some say "missing GTIN." Some say "image too small."
+      Some say "invalid product category." A few are genuinely cryptic. You sift through the list,
+      fix what you can, push another sync, and the count changes but never reaches zero.
+    </p>
+
+    <p>
+      I've audited a lot of feeds. The most common mistake is treating Google Merchant Center as
+      the validator. It is not. By the time GMC tells you a product is disapproved, you've already
+      burned the slow async loop: push the feed, wait for review, read the rejection, fix the
+      source data, push again. On a 10,000-product catalog that loop is days, not minutes.
+    </p>
+
+    <p>
+      The fix is to audit the feed before you push it. Catch the obvious failures locally,
+      ship a clean catalog, and let GMC review only the genuinely ambiguous edge cases. This
+      post is the audit checklist I use on real Shopify catalogs.
+    </p>
+
+    <h2>What "A Feed" Actually Means Here</h2>
+
+    <p>
+      When I say "feed" I mean the flat row-per-variant export you'd hand to GMC: one row for
+      each sellable SKU, with columns like <code>id</code>, <code>title</code>,
+      <code>description</code>, <code>link</code>, <code>image_link</code>, <code>price</code>,
+      <code>availability</code>, <code>brand</code>, <code>gtin</code>, <code>mpn</code>,
+      <code>identifier_exists</code>, <code>google_product_category</code>, and a handful of
+      attribute fields like <code>color</code>, <code>size</code>, <code>material</code>,
+      <code>age_group</code>, and <code>gender</code>.
+    </p>
+
+    <p>
+      Shopify doesn't expose this shape natively. You build it from the GraphQL admin API,
+      a CSV export, or whatever sync tool you're using in between. The audit happens after
+      that flattening step and before the GMC push.
+    </p>
+
+    <h2>The Eight Checks That Catch 90% of Disapprovals</h2>
+
+    <h3>1. Required field presence</h3>
+
+    <p>
+      Every row needs <code>id</code>, <code>title</code>, <code>description</code>,
+      <code>link</code>, <code>image_link</code>, <code>availability</code>, and <code>price</code>.
+      Run a presence check across every column on every row. The output should be zero empty
+      cells in those columns. If you see 414 empty titles in a 51,000-product feed, you have a
+      transformation bug, not a content gap. Most likely a variant-option name (like "Title") is
+      clobbering the product title during the flatten.
+    </p>
+
+    <h3>2. GTIN check-digit validation</h3>
+
+    <p>
+      A GTIN is not just any number. The last digit is a checksum computed from the first
+      twelve. Half the GTINs I see in the wild fail the checksum because someone hand-typed
+      them or scraped them from a supplier sheet without verifying. GMC will reject these as
+      "invalid GTIN" without telling you the digit is wrong, only that the value isn't found
+      in their database.
+    </p>
+
+    <p>
+      Compute the check digit yourself. The algorithm is short: multiply digits at odd positions
+      by 1, even positions by 3, sum, take the value needed to round up to the next 10. Reject
+      any row where the computed digit doesn't match the last digit on file. Surface those rows
+      to the merchant with the original value and the corrected one as a side-by-side comparison.
+    </p>
+
+    <h3>3. <code>identifier_exists</code> consistency</h3>
+
+    <p>
+      GMC requires either a valid GTIN/MPN/brand combination or an explicit
+      <code>identifier_exists=no</code> flag for products without manufacturer identifiers
+      (custom-made goods, vintage items, generic supplies). If a row has no GTIN and no MPN
+      but the brand is set, GMC will treat it as a missing identifier and disapprove. The fix
+      is to set <code>identifier_exists=no</code> on those rows, which signals "this product
+      genuinely has no identifier" rather than "we forgot one."
+    </p>
+
+    <p>
+      Audit for the inconsistent state: rows with brand but no GTIN/MPN and no
+      <code>identifier_exists=no</code>. Those are the disapprovals waiting to happen.
+    </p>
+
+    <h3>4. Image URL reachability</h3>
+
+    <p>
+      GMC fetches every <code>image_link</code> on every row. If the URL 404s, returns a
+      redirect chain, or serves an image smaller than 100x100 pixels, the product gets
+      disapproved. Run a HEAD request against every unique image URL in the feed. Capture
+      the status code, final URL after redirects, and content-length. Flag anything that's
+      not a 200 with a content-length above ~10KB.
+    </p>
+
+    <p>
+      The redirect case is the sneaky one. A Shopify CDN URL that resolves through a 301
+      to the canonical asset will load fine in a browser but GMC sometimes treats the
+      redirect chain as a soft failure. Resolve to the final URL in the feed.
+    </p>
+
+    <h3>5. <code>google_product_category</code> coverage</h3>
+
+    <p>
+      Google has an exhaustive product taxonomy. Most fields in the feed are optional, but the
+      category is what powers Shopping ad targeting. A product without a category gets
+      indistinct placement. A product with the wrong category gets shown to the wrong shoppers
+      and produces zero conversions.
+    </p>
+
+    <p>
+      Two checks: every row has a category, and the category exists in Google's current
+      taxonomy. Google publishes the full list as a downloadable text file. Download it, hash
+      it for fast lookup, and reject any row whose category isn't in the set. Bonus: flag rows
+      where the category is the top-level catch-all (like "Apparel & Accessories" with no
+      subcategory). Those won't get disapproved, but they will underperform.
+    </p>
+
+    <h3>6. Price and availability sanity</h3>
+
+    <p>
+      Price must be a positive number with a currency code. Availability must be one of
+      <code>in stock</code>, <code>out of stock</code>, <code>preorder</code>, or
+      <code>backorder</code>. The two interact: a $0 price with <code>in stock</code> is a
+      disapproval. A negative inventory count flattened to <code>in stock</code> is a
+      disapproval. A free product is allowed but only with the right structured signaling.
+    </p>
+
+    <p>
+      Audit the joint distribution. Count rows by availability and price-bucket. Anything
+      surprising (a thousand $0 in-stock rows, or a hundred negative-inventory in-stock rows)
+      is a transformation bug.
+    </p>
+
+    <h3>7. Title and description quality</h3>
+
+    <p>
+      Beyond presence, GMC has soft quality rules. Titles longer than 150 characters get
+      truncated in search results. Titles in all caps trigger spam filters. Descriptions
+      under 80 characters look thin and reduce ad rank. HTML tags in either field are
+      disallowed (and Shopify descriptions are HTML by default, so the flatten step needs
+      to strip them).
+    </p>
+
+    <p>
+      Audit for: title length distribution, all-caps ratio, description character count,
+      and presence of <code>&lt;</code> or <code>&gt;</code> in either field. The
+      transforms are easy. The audit is what tells you which products to apply them to.
+    </p>
+
+    <h3>8. Variant-level uniqueness</h3>
+
+    <p>
+      Every row in the feed needs a unique <code>id</code>. In Shopify, that means
+      variant-level not product-level. A product with three sizes and two colors becomes six
+      rows in the feed, each with a unique variant ID. If your transform is collapsing
+      variants or duplicating them, GMC will either dedupe to one (losing your color/size
+      coverage) or reject the duplicates.
+    </p>
+
+    <p>
+      Count distinct IDs against total row count. They should match. If they don't, your
+      flatten step has a join bug. Common cause: an inventory-location join that fans out
+      one row per location per variant, producing 4x or 8x the expected row count.
+    </p>
+
+    <h2>Running the Audit Without Building Your Own Tool</h2>
+
+    <p>
+      You can do all of this in a Google Sheet with formulas, and that's the path I recommend
+      for first-time audits. Pull your feed into a sheet, run the eight checks as columns,
+      and you'll find your problems in 20 minutes. The blockers I see most often (empty
+      titles, invalid GTINs, missing categories) jump out immediately.
+    </p>
+
+    <p>
+      I packaged the full set of checks into a Google Sheets add-on called
+      <a href="https://alexdiazme.gumroad.com/l/feed-audit-tool">Feed Audit Tool</a>.
+      It runs 130+ automated checks across the eight categories above, plus platform-specific
+      checks for Meta and Shopify, and produces a color-coded report with cell-level clickable
+      hyperlinks so you can jump to the exact problem cell. I built it for my own catalogs and
+      sell it on Gumroad for $29 because it saves me an hour every time I run it.
+    </p>
+
+    <p>
+      The bigger lesson is that the audit is a habit, not a one-time event. Catalogs drift.
+      Suppliers change SKUs. Photographers re-upload images at lower resolution. Whoever
+      controls the source data will, at some point, make a change that breaks the feed.
+      Run the audit on every push, not just the first one.
+    </p>
+
+    <h2>When the Audit Catches Something That Isn't Your Fault</h2>
+
+    <p>
+      Some failures live in the sync layer, not the source data. If your Shopify catalog has
+      a <code>custom.color</code> metafield that holds the right value, but the feed sent to
+      GMC has empty <code>color</code>, that's a mapping bug between Shopify and your sync
+      tool. The audit will flag it as a missing field, but the fix is in the transformation
+      logic, not in Shopify.
+    </p>
+
+    <p>
+      I built <a href="https://pipe.snowforge.dev">SnowPipe</a> for exactly this case: a
+      Shopify-to-GMC sync tool that handles metafield-to-attribute mapping, GTIN validation,
+      auto-removal of deleted products, and the row-limiting strategies that prevent half-syncs
+      on large catalogs. If you're tired of debugging your sync tool's transformations and
+      want one that's been audited against the eight checks above, that's what it's for.
+    </p>
+
+    <p>
+      But you don't need a sync tool to start. Audit your feed today, fix the obvious failures,
+      and watch the GMC disapproval count drop before you change anything else.
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  article header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  article header time {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  article header h1 {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+  }
+
+  article h2 {
+    margin-top: 2.5rem;
+  }
+</style>
