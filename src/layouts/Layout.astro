@@ -1,5 +1,6 @@
 ---
 import SeasonalEffects from '../components/SeasonalEffects.astro';
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   title: string;
@@ -64,6 +65,7 @@ const currentPath = Astro.url.pathname;
       </div>
       <p>&copy; {new Date().getFullYear()} Alex Diaz</p>
     </footer>
+    <Analytics />
   </body>
 </html>
 
