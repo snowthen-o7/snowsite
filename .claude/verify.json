@@ -1,5 +1,18 @@
 {
   "repo": "SnowSite",
-  "_note": "Placeholder opt-out. This repo is not yet onboarded to the SnowForge verify standard, so the Stop hook records an explicit opt-out instead of blocking on every stop. Replace surfaces with real entries when onboarding. Spec: SnowForge/docs/superpowers/specs/2026-09-08-verify-standard-design.md",
-  "surfaces": {}
+  "_note": "Onboarded 2026-11-24. Two cheap checks, both a few seconds: the Vitest suite for the tool libraries (5 files) and a real `astro build`, which renders every static page and bundles the server entry, so a broken page, import or content entry fails here. Build output (dist/, .astro/, .vercel/output) is gitignored.",
+  "surfaces": {
+    "src/**": { "tier": "fast", "run": "pnpm test:run && pnpm build" },
+    "public/**": { "tier": "fast", "run": "pnpm build" },
+    "astro.config.mjs": { "tier": "fast", "run": "pnpm build" },
+    "package.json": { "tier": "fast", "run": "pnpm test:run && pnpm build" }
+  },
+  "unverified": {
+    "src/**": [
+      "the server routes at request time: the build bundles src/pages/api/* but never calls them, so /api/health and the webhook routes are not exercised. A check that runs `astro preview` (or `astro dev`) and fetches /api/health would have to be written",
+      "how any page looks: nothing opens a browser, so layout and client-side scripts are untested",
+      "the deployed site: Vercel routing, redirects in vercel.json and production env vars are not involved"
+    ]
+  },
+  "ignore": ["**/*.md", "docs/**", "screenshots/**", "pnpm-lock.yaml"]
 }
